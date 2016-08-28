@@ -19,6 +19,8 @@ public:
     QVariant image;
     QVariant color;
     QList<QUrl> urls;
+
+    void clear();
 signals:
 
 public slots:

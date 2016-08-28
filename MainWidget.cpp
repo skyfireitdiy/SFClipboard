@@ -7,10 +7,14 @@
 #include <QFileDialog>
 #include <DataEditWnd.h>
 #include <TypeFilter.h>
+#include <QMessageBox>
+
+#include <QDesktopWidget>
 
 static const int list_margin=30;
-static const int menu_height=100;
+static const int menu_height=220;
 static const int window_width=400;
+static const int max_height=600;
 
 
 MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
@@ -41,6 +45,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 
     enable_auto_save=new QCheckBox("自动保存",this);
     auto_save_file_tip=new QLabel("文件路径",this);
+    auto_save_file_tip->setAlignment(Qt::AlignCenter);
     auto_save_file_name=new QLineEdit(this);
     auto_save_file_name->setReadOnly(true);
     auto_save_file_name_btn=new QPushButton("浏览",this);
@@ -50,6 +55,34 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
     top_layout->addWidget(auto_save_file_name,1,2,1,1);
     top_layout->addWidget(auto_save_file_name_btn,1,3,1,1);
 
+
+    record_count_tip=new QLabel("历史记录数量(0表示不限制)",this);
+    record_count_tip->setAlignment(Qt::AlignCenter);
+    record_count_edit=new QLineEdit(this);
+    record_count_set_btn=new QPushButton("设置数量",this);
+    top_layout->addWidget(record_count_tip,2,0,1,2);
+    top_layout->addWidget(record_count_edit,2,2,1,1);
+    top_layout->addWidget(record_count_set_btn,2,3,1,1);
+
+
+    save_to_file=new QPushButton("保存到文件",this);
+    load_from_file=new QPushButton("从文件加载",this);
+    export_image=new QPushButton("导出图片",this);
+    export_urls=new QPushButton("导出URL",this);
+    top_layout->addWidget(save_to_file,3,0,1,1);
+    top_layout->addWidget(load_from_file,3,1,1,1);
+    top_layout->addWidget(export_image,3,2,1,1);
+    top_layout->addWidget(export_urls,3,3,1,1);
+
+
+    export_text=new QPushButton("导出文本",this);
+    export_text_one=new QPushButton("导出文本(单文件)",this);
+    export_html=new QPushButton("导出HTML",this);
+    export_html_one=new QPushButton("导出HTML(单文件)",this);
+    top_layout->addWidget(export_text,4,0,1,1);
+    top_layout->addWidget(export_text_one,4,1,1,1);
+    top_layout->addWidget(export_html,4,2,1,1);
+    top_layout->addWidget(export_html_one,4,3,1,1);
 
 
     main_layout->addWidget(pView);
@@ -77,16 +110,33 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
     connect(delete_record_btn,SIGNAL(clicked(bool)),this,SLOT(on_delete_record()));
     connect(enable_auto_save,SIGNAL(stateChanged(int)),this,SLOT(on_setting_changed()));
     connect(auto_save_file_name_btn,SIGNAL(clicked(bool)),this,SLOT(on_set_auto_save_file()));
-
-
-
+    connect(save_to_file,SIGNAL(clicked(bool)),this,SLOT(on_save_to_file()));
+    connect(this,SIGNAL(save_to_file_sgn(QString)),pClipContent,SLOT(on_save_to_file(QString)));
+    connect(load_from_file,SIGNAL(clicked(bool)),this,SLOT(on_load_from_file()));
+    connect(this,SIGNAL(load_from_file_sgn(QString)),pClipContent,SLOT(on_load_from_file(QString)));
+    connect(record_count_set_btn,SIGNAL(clicked(bool)),this,SLOT(on_setting_changed()));
+    connect(export_image,SIGNAL(clicked(bool)),this,SLOT(on_export_image()));
+    connect(this,SIGNAL(export_image_sgn(QString)),pClipContent,SLOT(on_export_image(QString)));
+    connect(export_urls,SIGNAL(clicked(bool)),this,SLOT(on_export_urls()));
+    connect(this,SIGNAL(export_urls_sgn(QString)),pClipContent,SLOT(on_export_urls(QString)));
+    connect(export_text,SIGNAL(clicked(bool)),this,SLOT(on_export_text()));
+    connect(this,SIGNAL(export_text_sgn(QString)),pClipContent,SLOT(on_export_text(QString)));
+    connect(export_text_one,SIGNAL(clicked(bool)),this,SLOT(on_export_text_single()));
+    connect(this,SIGNAL(export_text_one_sgn(QString)),pClipContent,SLOT(on_export_text_single(QString)));
+    connect(export_html,SIGNAL(clicked(bool)),this,SLOT(on_export_html()));
+    connect(this,SIGNAL(export_html_sgn(QString)),pClipContent,SLOT(on_export_html(QString)));
+    connect(export_html_one,SIGNAL(clicked(bool)),this,SLOT(on_export_html_single()));
+    connect(this,SIGNAL(export_html_one_sgn(QString)),pClipContent,SLOT(on_export_html_single(QString)));
 }
 
 
 void MainWidget::on_data_changed(QQueue<Data> data){
     pModel->clear();
-    pView->setFixedHeight(data.size()*pView->fontMetrics().height()+list_margin);
-    setFixedHeight(data.size()*pView->fontMetrics().height()+menu_height);
+    int new_height=data.size()*pView->fontMetrics().height();
+    if(new_height>=max_height)
+        new_height=max_height;
+    pView->setFixedHeight(new_height+list_margin);
+    setFixedHeight(new_height+menu_height);
     for(int i=0;i<data.size();++i){
         QStandardItem *tempItem= new QStandardItem(QString::number(i)+" : "+ get_abstract(data.at(i)));
         tempItem->setEditable(false);
@@ -131,6 +181,7 @@ void MainWidget::on_setting_changed(){
     auto_save_file_name->setEnabled(enable_auto_save->isChecked());
     auto_save_file_name_btn->setEnabled(enable_auto_save->isChecked());
     pSettings->setValue("auto_save_file",auto_save_file_name->text());
+    pSettings->setValue("max_record_count",record_count_edit->text().toInt());
     emit setting_changed();
 }
 
@@ -141,6 +192,7 @@ void MainWidget::read_setting(){
     auto_save_file_name->setEnabled(enable_auto_save->isChecked());
     auto_save_file_name_btn->setEnabled(enable_auto_save->isChecked());
     auto_save_file_name->setText(pSettings->value("auto_save_file","").toString());
+    record_count_edit->setText(QString::number(pSettings->value("max_record_count",0).toInt()));
 }
 
 void MainWidget::on_filter_btn_clicked(){
@@ -178,11 +230,82 @@ void MainWidget::on_delete_record(){
 
 
 void MainWidget::on_set_auto_save_file(){
-    QString file_name=QFileDialog::getSaveFileName(this,"自动保存","","SFClipboard 保存文件 (*.sfclp)");
+    QString file_name=QFileDialog::getSaveFileName(this,"自动保存","","SFClipboard文件 (*.sfclp)");
     if(file_name.isEmpty())
         return;
     if(file_name.right(6).toLower()!=".sfclp")
         file_name+=".sfclp";
     auto_save_file_name->setText(file_name);
     on_setting_changed();
+}
+
+
+void MainWidget::on_save_to_file(){
+    QString file_name=QFileDialog::getSaveFileName(this,"保存","","SFClipboard文件 (*.sfclp)");
+    if(file_name.isEmpty())
+        return;
+    if(file_name.right(6).toLower()!=".sfclp")
+        file_name+=".sfclp";
+    emit save_to_file_sgn(file_name);
+}
+
+
+void MainWidget::on_load_from_file(){
+    QString file_name=QFileDialog::getOpenFileName(this,"保存","","SFClipboard文件 (*.sfclp)");
+    if(file_name.isEmpty())
+        return;
+    record_count_edit->setText("0");
+    on_setting_changed();
+    emit load_from_file_sgn(file_name);
+}
+
+
+void MainWidget::on_export_image(){
+    QString dir_name=QFileDialog::getExistingDirectory(this,"导出目录","", QFileDialog::DontResolveSymlinks);
+    if(dir_name.isEmpty())
+        return;
+    emit export_image_sgn(dir_name);
+}
+
+void MainWidget::on_export_urls(){
+    QString file_name=QFileDialog::getSaveFileName(this,"保存","","文本文件 (*.txt)");
+    if(file_name.isEmpty())
+        return;
+    if(file_name.right(4).toLower()!=".txt")
+        file_name+=".txt";
+    emit export_urls_sgn(file_name);
+}
+
+
+void MainWidget::on_export_text(){
+    QString dir_name=QFileDialog::getExistingDirectory(this,"导出目录","", QFileDialog::DontResolveSymlinks);
+    if(dir_name.isEmpty())
+        return;
+    emit export_text_sgn(dir_name);
+}
+
+void MainWidget::on_export_text_single(){
+    QString file_name=QFileDialog::getSaveFileName(this,"保存","","文本文件 (*.txt)");
+    if(file_name.isEmpty())
+        return;
+    if(file_name.right(4).toLower()!=".txt")
+        file_name+=".txt";
+    emit export_text_one_sgn(file_name);
+}
+
+
+void MainWidget::on_export_html(){
+    QString dir_name=QFileDialog::getExistingDirectory(this,"导出目录","", QFileDialog::DontResolveSymlinks);
+    if(dir_name.isEmpty())
+        return;
+    emit export_html_sgn(dir_name);
+}
+
+void MainWidget::on_export_html_single(){
+    QString file_name=QFileDialog::getSaveFileName(this,"保存","","网页文件 (*.html)");
+    if(file_name.isEmpty())
+        return;
+    if(file_name.right(5).toLower()!=".html")
+        file_name+=".html";
+    emit export_html_one_sgn(file_name);
 }

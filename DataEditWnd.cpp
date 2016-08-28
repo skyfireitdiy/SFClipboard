@@ -2,9 +2,11 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QMessageBox>
 #include <QFileDialog>
 #include <Global.h>
 #include <QDebug>
+
 
 
 DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data_t),color_changed(false)
@@ -27,9 +29,11 @@ DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data
     image_path=new QLineEdit(this);
     image_path->setReadOnly(true);
     image_path_tip=new QLabel("路径",this);
+    image_path_tip->setAlignment(Qt::AlignCenter);
     get_image_path_btn=new QPushButton("浏览",this);
     image_clear_btn=new QPushButton("清空",this);
-    urls_group=new QGroupBox("网址",this);
+    save_current_image=new QPushButton("另存图片",this);
+    urls_group=new QGroupBox("URL",this);
     urls_list=new QListView(this);
     urls_model=new QStandardItemModel(this);
     for(auto p:data.urls){
@@ -42,8 +46,11 @@ DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data
     color_group=new QGroupBox("颜色",this);
     color_show=new QLabel(this);
     green_label=new QLabel("G",this);
+    green_label->setAlignment(Qt::AlignCenter);
     red_label=new QLabel("R",this);
+    red_label->setAlignment(Qt::AlignCenter);
     blue_label=new QLabel("B",this);
+    blue_label->setAlignment(Qt::AlignCenter);
     QColor temp_color=qvariant_cast<QColor>(data.color);
     red_edit=new QLineEdit(QString::number(temp_color.redF()),this);
     green_edit=new QLineEdit(QString::number(temp_color.greenF()),this);
@@ -74,9 +81,10 @@ DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data
     QGridLayout *image_layout=new QGridLayout;
     image_layout->addWidget(image_show,0,0,1,6);
     image_layout->addWidget(image_path_tip,1,0,1,1);
-    image_layout->addWidget(image_path,1,1,1,3);
-    image_layout->addWidget(get_image_path_btn,1,4,1,1);
-    image_layout->addWidget(image_clear_btn,1,5,1,1);
+    image_layout->addWidget(image_path,1,1,1,2);
+    image_layout->addWidget(get_image_path_btn,1,3,1,1);
+    image_layout->addWidget(image_clear_btn,1,4,1,1);
+    image_layout->addWidget(save_current_image,1,5,1,1);
     image_group->setLayout(image_layout);
 
 
@@ -125,6 +133,7 @@ DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data
     connect(urls_add_btn,SIGNAL(clicked(bool)),this,SLOT(on_add_urls()));
     connect(ok_btn,SIGNAL(clicked(bool)),this,SLOT(on_ok()));
     connect(cancel_btn,SIGNAL(clicked(bool)),this,SLOT(on_cancel()));
+    connect(save_current_image,SIGNAL(clicked(bool)),this,SLOT(on_save_image()));
 }
 
 void DataEditWnd::on_color_changed(QColor color)
@@ -186,7 +195,7 @@ void DataEditWnd::on_ok(){
     }
     if(!image_path->text().isEmpty()){
         if(image_path->text()=="NULL"){
-            data.image.setValue(NULL);
+            data.image.clear();
             data.type&=~IMAGE;
         }else{
             QPixmap pixmap=QPixmap(image_path->text());
@@ -218,4 +227,26 @@ void DataEditWnd::on_image_clear(){
     QPixmap pixmap;
     image_show->setPixmap(pixmap);
     image_path->setText("NULL");
+}
+
+void DataEditWnd::on_save_image(){
+    if(image_path->text().isEmpty()&&data.image.isNull()){
+        QMessageBox::warning(this,"警告","没有图片数据");
+        return;
+    }
+    QString file_name=QFileDialog::getSaveFileName(this,"另存","","图片(*.png *.xpm *.jpg *.bmp)");
+    if(file_name.isEmpty())
+        return;
+    QString end_str=file_name.right(4).toLower();
+    if(end_str!=".png"&&end_str!=".xpm"&&end_str!=".jpg"&&end_str!=".bmp")
+        file_name+=".png";
+    if(image_path->text().isEmpty()){
+        if(!QPixmap::fromImage(qvariant_cast<QImage>(data.image)).save(file_name)){
+            QMessageBox::warning(this,"警告","文件另存失败");
+        }
+    }else{
+        if(!QPixmap(image_path->text()).save(file_name)){
+            QMessageBox::warning(this,"警告","文件另存失败");
+        }
+    }
 }

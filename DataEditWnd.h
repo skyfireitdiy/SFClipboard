@@ -31,6 +31,7 @@ private:
     QLabel *image_path_tip;
     QLineEdit *image_path;
     QPushButton *get_image_path_btn;
+    QPushButton *save_current_image;
     QPushButton *image_clear_btn;
     QGroupBox *urls_group;
     QListView *urls_list;
@@ -62,6 +63,7 @@ public slots:
     void on_ok();
     void on_cancel();
     void on_image_clear();
+    void on_save_image();
 };
 
 #endif // DATAEDITWND_H

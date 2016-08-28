@@ -24,6 +24,16 @@ signals:
     void setting_changed();
     void set_data(Data,int);
     void delete_record(int);
+    void save_to_file_sgn(QString);
+    void load_from_file_sgn(QString);
+    void export_image_sgn(QString);
+    void export_urls_sgn(QString);
+    void export_text_sgn(QString);
+    void export_text_one_sgn(QString);
+    void export_html_sgn(QString);
+    void export_html_one_sgn(QString);
+
+
 public slots:
     void on_data_changed(QQueue<Data> data);
     void on_item_clicked(QModelIndex index);
@@ -33,6 +43,15 @@ public slots:
     void on_edit_btn_clicked();
     void on_delete_record();
     void on_set_auto_save_file();
+    void on_save_to_file();
+    void on_load_from_file();
+    void on_export_image();
+    void on_export_urls();
+    void on_export_text();
+    void on_export_text_single();
+    void on_export_html();
+    void on_export_html_single();
+
 private:
     ClipBoardContent *pClipContent;
     QListView *pView;
@@ -46,6 +65,23 @@ private:
     QLabel *auto_save_file_tip;
     QLineEdit *auto_save_file_name;
     QPushButton *auto_save_file_name_btn;
+
+    QLabel *record_count_tip;
+    QLineEdit *record_count_edit;
+    QPushButton *record_count_set_btn;
+
+    QPushButton *save_to_file;
+    QPushButton *load_from_file;
+    QPushButton *export_image;
+    QPushButton *export_urls;
+
+
+    QPushButton *export_text;
+    QPushButton *export_text_one;
+    QPushButton *export_html;
+    QPushButton *export_html_one;
+
+
 
     QString get_abstract(const Data &data)const;
     void read_setting();

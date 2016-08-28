@@ -2,7 +2,8 @@
 #include <Global.h>
 #include <QMimeData>
 #include <QUrl>
-
+#include <QPixmap>
+#include <QFile>
 #include <QDebug>
 
 int  TEXT =1;
@@ -56,7 +57,7 @@ void ClipBoardContent::on_clip_data_changed(){
         return ;
     }
     data.push_front(tempData);
-    if(data.size()>max_record_count)
+    if(max_record_count>0&&data.size()>max_record_count)
         data.pop_back();
     if(is_auto_save){
         save_to_file(tempData);
@@ -66,7 +67,7 @@ void ClipBoardContent::on_clip_data_changed(){
 
 void ClipBoardContent::read_setting(){
     data_type=pSettings->value("data_type",0xff).toInt();
-    max_record_count=pSettings->value("max_record_count",20).toInt();
+    max_record_count=pSettings->value("max_record_count",0).toInt();
     enable=pSettings->value("enable",false).toBool();
     is_auto_save=pSettings->value("auto_save",false).toBool();
     auto_save_file=pSettings->value("auto_save_file","").toString();
@@ -74,7 +75,7 @@ void ClipBoardContent::read_setting(){
 }
 
 void ClipBoardContent::flush_record(){
-    while(max_record_count<data.size())
+    while(max_record_count>0&&max_record_count<data.size())
         data.pop_back();
     emit data_changed(data);
 }
@@ -138,4 +139,146 @@ void ClipBoardContent::save_to_file(Data dt){
     st.setValue("item"+QString::number(count)+"/urls/count",dt.urls.count());
     for(int i=0;i<dt.urls.count();++i)
         st.setValue("item"+QString::number(count)+"/urls/item"+QString::number(i+1),dt.urls.at(i));
+}
+
+void ClipBoardContent::on_save_to_file(QString file_name){
+    if(file_name.isEmpty())
+        return;
+    QSettings st(file_name,QSettings::IniFormat);
+    if(!st.isWritable())
+        return;
+    int count=st.value("count",0).toInt();
+    count++;
+    for(auto p:data){
+        st.setValue("count",count);
+        st.setValue("item"+QString::number(count)+"/type",p.type);
+        st.setValue("item"+QString::number(count)+"/text",p.text);
+        st.setValue("item"+QString::number(count)+"/html",p.html);
+        st.setValue("item"+QString::number(count)+"/image",p.image);
+        st.setValue("item"+QString::number(count)+"/color",p.color);
+        st.setValue("item"+QString::number(count)+"/urls/count",p.urls.count());
+        for(int i=0;i<p.urls.count();++i)
+            st.setValue("item"+QString::number(count)+"/urls/item"+QString::number(i+1),p.urls.at(i));
+        count++;
+    }
+}
+
+
+void ClipBoardContent::on_load_from_file(QString file_name){
+    if(file_name.isEmpty())
+        return;
+    QSettings st(file_name,QSettings::IniFormat);
+    data.clear();
+    Data temp_data;
+    int num=st.value("count",0).toInt();
+    for(int count=1;count<=num;++count){
+        temp_data.clear();
+        temp_data.type=st.value("item"+QString::number(count)+"/type",0).toInt();
+        temp_data.text=st.value("item"+QString::number(count)+"/text","").toString();
+        temp_data.html=st.value("item"+QString::number(count)+"/html").toString();
+        temp_data.image=st.value("item"+QString::number(count)+"/image");
+        temp_data.color=st.value("item"+QString::number(count)+"/color");
+        int t=st.value("item"+QString::number(count)+"/urls/count").toInt();
+        for(int i=0;i<t;++i){
+            temp_data.urls.append(st.value("item"+QString::number(count)+"/urls/item"+QString::number(i+1)).toUrl());
+        }
+        data.append(temp_data);
+    }
+    emit data_changed(data);
+}
+
+
+void ClipBoardContent::on_export_image(QString dir){
+    if(dir.isEmpty())
+        return;
+    if(!dir.endsWith("/"))
+        dir+="/";
+    int count=0;
+    for(auto p:data){
+        if(p.type&IMAGE){
+            QPixmap::fromImage(qvariant_cast<QImage>(p.image)).save(dir+QString::number(count)+".png");
+            count++;
+        }
+    }
+}
+
+
+void ClipBoardContent::on_export_urls(QString file_name){
+    QFile file(file_name);
+    file.open(QFile::WriteOnly);
+    for(auto p:data){
+        if(p.type&URLS){
+            for(auto q:p.urls){
+                file.write((q.toString()+"\n").toUtf8());
+            }
+        }
+    }
+    file.close();
+}
+
+
+void ClipBoardContent::on_export_text(QString dir){
+    if(dir.isEmpty())
+        return;
+    if(!dir.endsWith("/"))
+        dir+="/";
+    int count=0;
+    for(auto p:data){
+        if(p.type&TEXT){
+            QFile file(dir+QString::number(count)+".txt");
+            file.open(QFile::WriteOnly);
+            file.write(p.text.toUtf8());
+            file.close();
+            count++;
+        }
+    }
+}
+
+
+void ClipBoardContent::on_export_text_single(QString file_name){
+    QFile file(file_name);
+    file.open(QFile::WriteOnly);
+    int count=0;
+    for(auto p:data){
+        if(p.type&TEXT){
+            count++;
+            file.write((QString::number(count)+"------------------------------\n\n"+p.text+"\n\n").toUtf8());
+        }
+    }
+    file.close();
+}
+
+
+
+void ClipBoardContent::on_export_html(QString dir){
+    if(dir.isEmpty())
+        return;
+    if(!dir.endsWith("/"))
+        dir+="/";
+    int count=0;
+    for(auto p:data){
+        if(p.type&HTML){
+            QFile file(dir+QString::number(count)+".html");
+            file.open(QFile::WriteOnly);
+            file.write("<meta charset=\"utf-8\" />");
+            file.write(p.html.toUtf8());
+            file.close();
+            count++;
+        }
+    }
+}
+
+
+void ClipBoardContent::on_export_html_single(QString file_name){
+    QFile file(file_name);
+    file.open(QFile::WriteOnly);
+    int count=0;
+    file.write("<meta charset=\"utf-8\" />");
+    for(auto p:data){
+        if(p.type&HTML){
+            count++;
+            file.write((QString::number(count)+"------------------------------<br/><br/>"+p.html+"<br/><br/>").toUtf8());
+        }
+    }
+    file.close();
 }

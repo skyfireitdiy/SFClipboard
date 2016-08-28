@@ -17,3 +17,6 @@ SOURCES += \
     DataEditWnd.cpp
 
 CONFIG+= c++11
+
+DISTFILES += \
+    readme.md

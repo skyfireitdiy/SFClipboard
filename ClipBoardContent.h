@@ -27,6 +27,15 @@ public slots:
     void on_data_edit(int index);
     void on_set_data(Data dt,int index);
     void on_delete_record(int index);
+    void on_save_to_file(QString file_name);
+    void on_load_from_file(QString file_name);
+    void on_export_image(QString dir);
+    void on_export_urls(QString file_name);
+    void on_export_text(QString dir);
+    void on_export_text_single(QString file_name);
+    void on_export_html(QString dir);
+    void on_export_html_single(QString file_name);
+
 private:
     QQueue<Data> data;
     QClipboard *pClip;

@@ -9,7 +9,7 @@ TypeFilter::TypeFilter(QWidget *parent):QDialog(parent)
     setLayout(layout);
     enable_text=new QCheckBox("文本",this);
     enable_html=new QCheckBox("HTML",this);
-    enable_url=new QCheckBox("网址",this);
+    enable_url=new QCheckBox("URL",this);
     enable_image=new QCheckBox("图片",this);
     enable_color=new QCheckBox("颜色",this);
     ok_btn=new QPushButton("确定",this);

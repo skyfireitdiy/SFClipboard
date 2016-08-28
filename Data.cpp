@@ -15,3 +15,13 @@ const Data& Data::operator =(const Data & other){
     urls=other.urls;
     text=other.text;
 }
+
+
+void Data::clear(){
+    type=0;
+    image=QVariant();
+    color=QVariant();
+    html="";
+    text="";
+    urls.clear();
+}
