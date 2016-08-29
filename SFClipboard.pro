@@ -20,3 +20,4 @@ CONFIG+= c++11
 
 DISTFILES += \
     readme.md
+

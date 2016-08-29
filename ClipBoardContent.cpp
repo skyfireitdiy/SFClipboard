@@ -5,6 +5,7 @@
 #include <QPixmap>
 #include <QFile>
 #include <QDebug>
+#include <QApplication>
 
 int  TEXT =1;
 int  HTML =2;
@@ -13,9 +14,14 @@ int  COLOR =8;
 int  URLS =16;
 
 
-ClipBoardContent::ClipBoardContent(QObject *parent) : QObject(parent),selecting(false),enable(true),editing(false)
+ClipBoardContent::ClipBoardContent(QObject *parent) :QObject(parent),
+    pClip(QApplication::clipboard()),
+    data_type(0),
+    max_record_count(0),
+    selecting(false),
+    editing(false),
+    enable(true)
 {
-    pClip=pApp->clipboard();
     read_setting();
     connect(pClip,SIGNAL(dataChanged()),this,SLOT(on_clip_data_changed()));
 }
@@ -68,7 +74,7 @@ void ClipBoardContent::on_clip_data_changed(){
 void ClipBoardContent::read_setting(){
     data_type=pSettings->value("data_type",0xff).toInt();
     max_record_count=pSettings->value("max_record_count",0).toInt();
-    enable=pSettings->value("enable",false).toBool();
+    enable=pSettings->value("enable",true).toBool();
     is_auto_save=pSettings->value("auto_save",false).toBool();
     auto_save_file=pSettings->value("auto_save_file","").toString();
     flush_record();
@@ -121,6 +127,7 @@ void ClipBoardContent::on_delete_record(int index){
     data.removeAt(index);
     emit data_changed(data);
 }
+
 
 void ClipBoardContent::save_to_file(Data dt){
     if(auto_save_file.isEmpty())

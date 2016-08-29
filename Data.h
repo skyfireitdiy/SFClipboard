@@ -11,7 +11,7 @@ class Data : public QObject
     Q_OBJECT
 public:
     explicit Data(QObject *parent = 0);
-    Data(const Data& other);
+    Data(const Data& other, QObject *parent=0);
     const Data& operator =(const Data& other);
     int type;
     QString text;
