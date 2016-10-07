@@ -5,6 +5,7 @@
 
 QApplication *pApp=0;
 QSettings *pSettings;
+QString version="1.0";
 
 int main(int argc,char ** argv){
     QApplication app(argc,argv);

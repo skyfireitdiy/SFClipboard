@@ -122,6 +122,8 @@ DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data
 
     setLayout(main_layout);
 
+    setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint);
+
 
     connect(html_edit,SIGNAL(textChanged()),this,SLOT(on_html_chnaged()));
     connect(get_image_path_btn,SIGNAL(clicked(bool)),this,SLOT(on_image_path_btn_clicked()));

@@ -11,6 +11,7 @@ extern int  URLS ;
 
 extern QApplication *pApp;
 extern QSettings *pSettings;
+extern QString version;
 
 
 #endif // GLOBAL_H

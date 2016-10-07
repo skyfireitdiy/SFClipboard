@@ -33,6 +33,8 @@ TypeFilter::TypeFilter(QWidget *parent):QDialog(parent)
     enable_url->setChecked(data_type&URLS);
     enable_image->setChecked(data_type&IMAGE);
     enable_color->setChecked(data_type&COLOR);
+
+    setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint);
 }
 
 void TypeFilter::on_ok_btn_clicked(){

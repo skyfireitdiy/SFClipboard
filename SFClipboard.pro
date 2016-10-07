@@ -6,7 +6,8 @@ HEADERS += \
     ClipBoardContent.h \
     Data.h \
     TypeFilter.h \
-    DataEditWnd.h
+    DataEditWnd.h \
+    AutoHide.h
 
 SOURCES += \
     MainWidget.cpp \
@@ -14,10 +15,16 @@ SOURCES += \
     ClipBoardContent.cpp \
     Data.cpp \
     TypeFilter.cpp \
-    DataEditWnd.cpp
+    DataEditWnd.cpp \
+    AutoHide.cpp
 
 CONFIG+= c++11
 
 DISTFILES += \
-    readme.md
+    readme.md \
+    icon.rc
 
+RESOURCES += \
+    resource.qrc
+
+RC_FILE+=icon.rc

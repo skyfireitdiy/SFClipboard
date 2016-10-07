@@ -8,16 +8,18 @@
 #include <DataEditWnd.h>
 #include <TypeFilter.h>
 #include <QMessageBox>
-
+#include <QIcon>
+#include <QMouseEvent>
 #include <QDesktopWidget>
+#include <QBitmap>
 
 static const int list_margin=30;
 static const int menu_height=220;
-static const int window_width=400;
-static const int max_height=600;
+static const int window_width=440;
+static const int max_height=400;
 
 
-MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
+MainWidget::MainWidget(QWidget *parent) : QWidget(parent),real_exit(false)
 {
     pClipContent=new ClipBoardContent(this);
     pView=new QListView(this);
@@ -40,7 +42,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 
     delete_record_btn=new QPushButton("删除记录",this);
     top_layout->addWidget(delete_record_btn,0,3,1,1);
-
 
 
     enable_auto_save=new QCheckBox("自动保存",this);
@@ -85,6 +86,15 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
     top_layout->addWidget(export_html_one,4,3,1,1);
 
 
+    about_btn=new QPushButton("关于",this);
+    ad_label=new QLabel("<font style='color:yellow;'>SFClipboard --By SkyFire</font>",this);
+    ad_label->setAlignment(Qt::AlignCenter);
+    hide_btn=new QPushButton("隐藏",this);
+    top_layout->addWidget(about_btn,5,0,1,1);
+    top_layout->addWidget(ad_label,5,1,1,2);
+    top_layout->addWidget(hide_btn,5,3,1,1);
+
+
     main_layout->addWidget(pView);
     main_layout->addLayout(top_layout);
     setLayout(main_layout);
@@ -94,6 +104,20 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 
     read_setting();
 
+    tray_menu=new QMenu(this);
+    tray_menu->addAction("显示/隐藏主界面",this,SLOT(on_show_hide_widget()));
+    tray_menu->addAction("退出",this,SLOT(on_real_exit()));
+    tray_icon=new QSystemTrayIcon(QIcon(":/icon/resource/tray.png"),this);
+    tray_icon->show();
+    tray_icon->setContextMenu(tray_menu);
+
+    setContextMenuPolicy(Qt::CustomContextMenu);
+
+    auto_hide=new AutoHide(this);
+
+    setWindowIcon(QIcon(":/icon/resource/tray.png"));
+    setStyleSheet("*{font-weight:bold;color:white;}.QListView{color:white;background-color:#220000;}.QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}.QMenu{background-color:#000000;}.QMessageBox{border-image:url(:/pic/resource/background.png);}");
+    setWindowOpacity(0.8);
 
     connect(pClipContent,SIGNAL(data_changed(QQueue<Data>)),this,SLOT(on_data_changed(QQueue<Data>)));
     connect(pView,SIGNAL(clicked(QModelIndex)),this,SLOT(on_item_clicked(QModelIndex)));
@@ -127,21 +151,24 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
     connect(this,SIGNAL(export_html_sgn(QString)),pClipContent,SLOT(on_export_html(QString)));
     connect(export_html_one,SIGNAL(clicked(bool)),this,SLOT(on_export_html_single()));
     connect(this,SIGNAL(export_html_one_sgn(QString)),pClipContent,SLOT(on_export_html_single(QString)));
+    connect(this,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(on_customContextMenuRequested()));
+    connect(hide_btn,SIGNAL(clicked(bool)),this,SLOT(hide()));
+    connect(about_btn,SIGNAL(clicked(bool)),this,SLOT(on_about()));
 }
 
 
 void MainWidget::on_data_changed(QQueue<Data> data){
     pModel->clear();
-    int new_height=data.size()*pView->fontMetrics().height();
-    if(new_height>=max_height)
-        new_height=max_height;
-    pView->setFixedHeight(new_height+list_margin);
-    setFixedHeight(new_height+menu_height);
     for(int i=0;i<data.size();++i){
         QStandardItem *tempItem= new QStandardItem(QString::number(i)+" : "+ get_abstract(data.at(i)));
         tempItem->setEditable(false);
         pModel->insertRow(i,tempItem);
     }
+    int new_height=data.size()*(pView->fontMetrics().lineSpacing()+2);
+    if(new_height>=max_height)
+        new_height=max_height;
+    pView->setFixedHeight(new_height+list_margin);
+    setFixedHeight(new_height+menu_height);
 }
 
 
@@ -308,4 +335,39 @@ void MainWidget::on_export_html_single(){
     if(file_name.right(5).toLower()!=".html")
         file_name+=".html";
     emit export_html_one_sgn(file_name);
+}
+
+void MainWidget::on_show_hide_widget(){
+    if(isHidden()){
+        show();
+    }else{
+        hide();
+    }
+}
+
+void MainWidget::closeEvent(QCloseEvent *event){
+    hide();
+    if(!real_exit)
+        event->ignore();
+    else
+        event->accept();
+}
+
+void MainWidget::on_real_exit(){
+    real_exit=true;
+    close();
+}
+
+void MainWidget::on_customContextMenuRequested(){
+    tray_menu->popup(QCursor::pos());
+}
+
+void MainWidget::resizeEvent(QResizeEvent *event){
+    QPalette pal;
+    pal.setBrush(QPalette::Window,QBrush(QPixmap(":/pic/resource/background.png").scaled(size())));
+    setPalette(pal);
+}
+
+void MainWidget::on_about(){
+    QMessageBox::about(this,"关于SFClipboard","作者：SkyFire\nQQ：1513008876\nE-mail：skyfireitdiy@hotmail.com\n项目地址：http://git.oschina.net/skyfireitdiy/SFClipboard\n版本："+version+"\n编译时间："+__DATE__+" "+__TIME__+"\n");
 }

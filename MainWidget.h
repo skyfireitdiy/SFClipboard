@@ -10,6 +10,9 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QLabel>
+#include <QSystemTrayIcon>
+#include <QMenu>
+#include <AutoHide.h>
 
 
 class MainWidget : public QWidget
@@ -51,6 +54,10 @@ public slots:
     void on_export_text_single();
     void on_export_html();
     void on_export_html_single();
+    void on_show_hide_widget();
+    void on_real_exit();
+    void on_customContextMenuRequested();
+    void on_about();
 
 private:
     ClipBoardContent *pClipContent;
@@ -81,10 +88,25 @@ private:
     QPushButton *export_html;
     QPushButton *export_html_one;
 
+    QPushButton *about_btn;
+    QLabel *ad_label;
+    QPushButton *hide_btn;
 
+    AutoHide *auto_hide;
+
+    bool real_exit;
+
+
+    QSystemTrayIcon *tray_icon;
+
+    QMenu *tray_menu;
 
     QString get_abstract(const Data &data)const;
     void read_setting();
+
+    void closeEvent(QCloseEvent *event);
+    void resizeEvent(QResizeEvent *event);
+
 };
 
 #endif // MAINWIDGET_H
