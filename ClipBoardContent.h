@@ -35,6 +35,7 @@ public slots:
     void on_export_text_single(QString file_name);
     void on_export_html(QString dir);
     void on_export_html_single(QString file_name);
+    void on_clear_all();
 
 private:
     QQueue<Data> data;

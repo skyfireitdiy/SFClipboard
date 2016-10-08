@@ -2,6 +2,7 @@
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QMouseEvent>
+#include <QApplication>
 #include <QDebug>
 
 AutoHide::AutoHide(QWidget *parent) : QObject(parent),parent_widget(parent),mouse_press(false)
@@ -106,13 +107,18 @@ bool AutoHide::eventFilter(QObject *watched, QEvent *event){
             if(m->button()==Qt::LeftButton){
                 old_pos=QCursor::pos();
                 mouse_press=true;
+                qDebug()<<"Left Button Down";
             }
         }else if(event->type()==QEvent::MouseMove){
             QMouseEvent *m=(QMouseEvent*)event;
             if(mouse_press){
-                QPoint new_pos=QCursor::pos();
-                parent_widget->move(parent_widget->pos()+new_pos-old_pos);
-                old_pos=new_pos;
+                if(QApplication::mouseButtons()&Qt::LeftButton){
+                    QPoint new_pos=QCursor::pos();
+                    parent_widget->move(parent_widget->pos()+new_pos-old_pos);
+                    old_pos=new_pos;
+                }else{
+                    mouse_press=false;
+                }
             }
         }else if(event->type()==QEvent::MouseButtonRelease){
             QMouseEvent *m=(QMouseEvent*)event;

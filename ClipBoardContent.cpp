@@ -289,3 +289,9 @@ void ClipBoardContent::on_export_html_single(QString file_name){
     }
     file.close();
 }
+
+
+void ClipBoardContent::on_clear_all(){
+    data.clear();
+    emit data_changed(data);
+}

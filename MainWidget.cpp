@@ -19,7 +19,7 @@ static const int window_width=440;
 static const int max_height=400;
 
 
-MainWidget::MainWidget(QWidget *parent) : QWidget(parent),real_exit(false)
+MainWidget::MainWidget(QWidget *parent) : QWidget(parent),real_exit(false),auto_hide(false),auto_hide_widget(0)
 {
     pClipContent=new ClipBoardContent(this);
     pView=new QListView(this);
@@ -87,11 +87,12 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),real_exit(false)
 
 
     about_btn=new QPushButton("关于",this);
-    ad_label=new QLabel("<font style='color:yellow;'>SFClipboard --By SkyFire</font>",this);
-    ad_label->setAlignment(Qt::AlignCenter);
-    hide_btn=new QPushButton("隐藏",this);
+    clear_all=new QPushButton("清空",this);
+    rel_close=new QPushButton("关闭");
+    hide_btn=new QPushButton("",this);
     top_layout->addWidget(about_btn,5,0,1,1);
-    top_layout->addWidget(ad_label,5,1,1,2);
+    top_layout->addWidget(clear_all,5,1,1,1);
+    top_layout->addWidget(rel_close,5,2,1,1);
     top_layout->addWidget(hide_btn,5,3,1,1);
 
 
@@ -112,8 +113,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),real_exit(false)
     tray_icon->setContextMenu(tray_menu);
 
     setContextMenuPolicy(Qt::CustomContextMenu);
-
-    auto_hide=new AutoHide(this);
 
     setWindowIcon(QIcon(":/icon/resource/tray.png"));
     setStyleSheet("*{font-weight:bold;color:white;}.QListView{color:white;background-color:#220000;}.QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}.QMenu{background-color:#000000;}.QMessageBox{border-image:url(:/pic/resource/background.png);}");
@@ -152,8 +151,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),real_exit(false)
     connect(export_html_one,SIGNAL(clicked(bool)),this,SLOT(on_export_html_single()));
     connect(this,SIGNAL(export_html_one_sgn(QString)),pClipContent,SLOT(on_export_html_single(QString)));
     connect(this,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(on_customContextMenuRequested()));
-    connect(hide_btn,SIGNAL(clicked(bool)),this,SLOT(hide()));
+    connect(clear_all,SIGNAL(clicked(bool)),this,SLOT(on_clear_all()));
+    connect(this,SIGNAL(clear_all_sgn()),pClipContent,SLOT(on_clear_all()));
     connect(about_btn,SIGNAL(clicked(bool)),this,SLOT(on_about()));
+    connect(rel_close,SIGNAL(clicked(bool)),this,SLOT(on_real_exit()));
+    connect(hide_btn,SIGNAL(clicked(bool)),this,SLOT(on_auto_hide()));
 }
 
 
@@ -209,7 +211,10 @@ void MainWidget::on_setting_changed(){
     auto_save_file_name_btn->setEnabled(enable_auto_save->isChecked());
     pSettings->setValue("auto_save_file",auto_save_file_name->text());
     pSettings->setValue("max_record_count",record_count_edit->text().toInt());
+    pSettings->setValue("auto_hide",auto_hide);
     emit setting_changed();
+
+    flush_settings();
 }
 
 
@@ -220,6 +225,9 @@ void MainWidget::read_setting(){
     auto_save_file_name_btn->setEnabled(enable_auto_save->isChecked());
     auto_save_file_name->setText(pSettings->value("auto_save_file","").toString());
     record_count_edit->setText(QString::number(pSettings->value("max_record_count",0).toInt()));
+    auto_hide=pSettings->value("auto_hide",true).toBool();
+
+    flush_settings();
 }
 
 void MainWidget::on_filter_btn_clicked(){
@@ -354,6 +362,9 @@ void MainWidget::closeEvent(QCloseEvent *event){
 }
 
 void MainWidget::on_real_exit(){
+    if(QMessageBox::question(this,"退出","是否退出SFClipboard?",QMessageBox::No,QMessageBox::Yes)==QMessageBox::No){
+        return;
+    }
     real_exit=true;
     close();
 }
@@ -370,4 +381,29 @@ void MainWidget::resizeEvent(QResizeEvent *event){
 
 void MainWidget::on_about(){
     QMessageBox::about(this,"关于SFClipboard","作者：SkyFire\nQQ：1513008876\nE-mail：skyfireitdiy@hotmail.com\n项目地址：http://git.oschina.net/skyfireitdiy/SFClipboard\n版本："+version+"\n编译时间："+__DATE__+" "+__TIME__+"\n");
+}
+
+void MainWidget::on_clear_all(){
+    emit clear_all_sgn();
+}
+
+void MainWidget::on_auto_hide(){
+    auto_hide=!auto_hide;
+    on_setting_changed();
+}
+
+void MainWidget::flush_settings(){
+    if(auto_hide){
+        if(auto_hide_widget){
+            delete auto_hide_widget;
+        }
+        auto_hide_widget=new AutoHide(this);
+        hide_btn->setText("固定");
+    }else{
+        if(auto_hide_widget){
+            delete auto_hide_widget;
+            auto_hide_widget=0;
+        }
+        hide_btn->setText("悬浮");
+    }
 }

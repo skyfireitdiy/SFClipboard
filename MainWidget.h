@@ -35,6 +35,7 @@ signals:
     void export_text_one_sgn(QString);
     void export_html_sgn(QString);
     void export_html_one_sgn(QString);
+    void clear_all_sgn();
 
 
 public slots:
@@ -58,6 +59,8 @@ public slots:
     void on_real_exit();
     void on_customContextMenuRequested();
     void on_about();
+    void on_clear_all();
+    void on_auto_hide();
 
 private:
     ClipBoardContent *pClipContent;
@@ -89,12 +92,14 @@ private:
     QPushButton *export_html_one;
 
     QPushButton *about_btn;
-    QLabel *ad_label;
+    QPushButton *clear_all;
+    QPushButton *rel_close;
     QPushButton *hide_btn;
 
-    AutoHide *auto_hide;
+    AutoHide *auto_hide_widget;
 
     bool real_exit;
+    bool auto_hide;
 
 
     QSystemTrayIcon *tray_icon;
@@ -106,7 +111,7 @@ private:
 
     void closeEvent(QCloseEvent *event);
     void resizeEvent(QResizeEvent *event);
-
+    void flush_settings();
 };
 
 #endif // MAINWIDGET_H
