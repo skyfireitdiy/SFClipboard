@@ -164,8 +164,8 @@ void ClipBoardContent::on_save_to_file(QString file_name){
         st.setValue("item"+QString::number(count)+"/image",data[i].image);
         st.setValue("item"+QString::number(count)+"/color",data[i].color);
         st.setValue("item"+QString::number(count)+"/urls/count",data[i].urls.count());
-        for(int i=0;i<data[i].urls.count();++i)
-            st.setValue("item"+QString::number(count)+"/urls/item"+QString::number(i+1),data[i].urls.at(i));
+        for(int j=0;j<data[i].urls.count();++j)
+            st.setValue("item"+QString::number(count)+"/urls/item"+QString::number(j+1),data[i].urls.at(j));
         count++;
     }
 }
