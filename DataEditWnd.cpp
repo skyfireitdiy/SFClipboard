@@ -8,7 +8,6 @@
 #include <QDebug>
 
 
-
 DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data_t),color_changed(false)
 {
     setWindowTitle("编辑数据");
@@ -52,9 +51,9 @@ DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data
     blue_label=new QLabel("B",this);
     blue_label->setAlignment(Qt::AlignCenter);
     QColor temp_color=qvariant_cast<QColor>(data.color);
-    red_edit=new QLineEdit(QString::number(temp_color.redF()),this);
-    green_edit=new QLineEdit(QString::number(temp_color.greenF()),this);
-    blue_edit=new QLineEdit(QString::number(temp_color.blueF()),this);
+    red_edit=new QLineEdit(QString::number(temp_color.red()),this);
+    green_edit=new QLineEdit(QString::number(temp_color.green()),this);
+    blue_edit=new QLineEdit(QString::number(temp_color.blue()),this);
     on_color_changed(temp_color);
     ok_btn=new QPushButton("确定",this);
     cancel_btn=new QPushButton("取消",this);

@@ -7,7 +7,8 @@ HEADERS += \
     Data.h \
     TypeFilter.h \
     DataEditWnd.h \
-    AutoHide.h
+    AutoHide.h \
+    WinHook.h
 
 SOURCES += \
     MainWidget.cpp \
@@ -16,7 +17,8 @@ SOURCES += \
     Data.cpp \
     TypeFilter.cpp \
     DataEditWnd.cpp \
-    AutoHide.cpp
+    AutoHide.cpp \
+    WinHook.cpp
 
 CONFIG+= c++11
 

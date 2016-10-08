@@ -156,16 +156,16 @@ void ClipBoardContent::on_save_to_file(QString file_name){
         return;
     int count=st.value("count",0).toInt();
     count++;
-    for(auto p:data){
+    for(auto p=data.rbegin();p!=data.rend();++p){
         st.setValue("count",count);
-        st.setValue("item"+QString::number(count)+"/type",p.type);
-        st.setValue("item"+QString::number(count)+"/text",p.text);
-        st.setValue("item"+QString::number(count)+"/html",p.html);
-        st.setValue("item"+QString::number(count)+"/image",p.image);
-        st.setValue("item"+QString::number(count)+"/color",p.color);
-        st.setValue("item"+QString::number(count)+"/urls/count",p.urls.count());
-        for(int i=0;i<p.urls.count();++i)
-            st.setValue("item"+QString::number(count)+"/urls/item"+QString::number(i+1),p.urls.at(i));
+        st.setValue("item"+QString::number(count)+"/type",p->type);
+        st.setValue("item"+QString::number(count)+"/text",p->text);
+        st.setValue("item"+QString::number(count)+"/html",p->html);
+        st.setValue("item"+QString::number(count)+"/image",p->image);
+        st.setValue("item"+QString::number(count)+"/color",p->color);
+        st.setValue("item"+QString::number(count)+"/urls/count",p->urls.count());
+        for(int i=0;i<p->urls.count();++i)
+            st.setValue("item"+QString::number(count)+"/urls/item"+QString::number(i+1),p->urls.at(i));
         count++;
     }
 }
@@ -189,7 +189,7 @@ void ClipBoardContent::on_load_from_file(QString file_name){
         for(int i=0;i<t;++i){
             temp_data.urls.append(st.value("item"+QString::number(count)+"/urls/item"+QString::number(i+1)).toUrl());
         }
-        data.append(temp_data);
+        data.insert(data.begin(),temp_data);
     }
     emit data_changed(data);
 }

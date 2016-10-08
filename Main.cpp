@@ -5,7 +5,8 @@
 
 QApplication *pApp=0;
 QSettings *pSettings;
-QString version="1.0";
+QString version="1.1";
+MainWidget *pMainWidget=nullptr;
 
 int main(int argc,char ** argv){
     QApplication app(argc,argv);
@@ -13,6 +14,7 @@ int main(int argc,char ** argv){
     pApp=&app;
     pSettings=new QSettings("sfclip.ini",QSettings::IniFormat,pApp);
     MainWidget w;
+    pMainWidget=&w;
     w.show();
     return app.exec();
 }

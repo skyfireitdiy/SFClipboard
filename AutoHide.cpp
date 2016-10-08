@@ -13,7 +13,8 @@ AutoHide::AutoHide(QWidget *parent) : QObject(parent),parent_widget(parent),mous
     connect(show_timer,SIGNAL(timeout()),this,SLOT(on_show_widget()));
     parent_widget->setMouseTracking(true);
     parent_widget->installEventFilter(this);
-    parent_widget->setWindowFlags(parent_widget->windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint);
+    parent_widget->setWindowFlags(parent_widget->windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint);
+    connect(parent_widget,SIGNAL(rect_changed()),this,SLOT(on_check_if_hide()));
 }
 
 

@@ -13,6 +13,11 @@
 #include <QDesktopWidget>
 #include <QBitmap>
 
+#ifdef _WIN32
+#include <windows.h>
+#include <WinHook.h>
+#endif
+
 static const int list_margin=30;
 static const int menu_height=260;
 static const int window_width=440;
@@ -174,6 +179,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     connect(about_btn,SIGNAL(clicked(bool)),this,SLOT(on_about()));
     connect(rel_close,SIGNAL(clicked(bool)),this,SLOT(on_real_exit()));
     connect(hide_btn,SIGNAL(clicked(bool)),this,SLOT(on_auto_hide()));
+
+#ifdef _WIN32
+    setHook();
+#endif
+
 }
 
 
@@ -400,6 +410,7 @@ void MainWidget::resizeEvent(QResizeEvent *){
     QPalette pal;
     pal.setBrush(QPalette::Window,QBrush(QPixmap(":/pic/resource/background.png").scaled(size())));
     setPalette(pal);
+    emit rect_changed();
 }
 
 void MainWidget::on_about(){
@@ -437,4 +448,23 @@ void MainWidget::flush_settings(){
 
 MainWidget::~MainWidget(){
     write_setting();
+
+#ifdef _WIN32
+    unHook();
+#endif
+
 }
+
+#ifdef _WIN32
+
+void MainWidget::on_hot_key(int num){
+    if(num<pModel->rowCount()){
+        emit item_clicked(num);
+        keybd_event(VK_CONTROL,0,0,0);
+        keybd_event('V',0,0,0);
+        keybd_event('V',0,KEYEVENTF_KEYUP,0);
+        keybd_event(VK_CONTROL,0,KEYEVENTF_KEYUP,0);
+    }
+}
+
+#endif

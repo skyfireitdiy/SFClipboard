@@ -21,6 +21,11 @@ class MainWidget : public QWidget
 public:
     explicit MainWidget(QWidget *parent = 0);
     ~MainWidget();
+
+#ifdef _WIN32
+    void on_hot_key(int num);
+#endif
+
 signals:
     void item_clicked(int);
     void item_need_edit(int);
@@ -36,6 +41,7 @@ signals:
     void export_html_sgn(QString);
     void export_html_one_sgn(QString);
     void clear_all_sgn();
+    void rect_changed();
 
 
 public slots:
