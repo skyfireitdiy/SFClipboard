@@ -107,10 +107,8 @@ bool AutoHide::eventFilter(QObject *watched, QEvent *event){
             if(m->button()==Qt::LeftButton){
                 old_pos=QCursor::pos();
                 mouse_press=true;
-                qDebug()<<"Left Button Down";
             }
         }else if(event->type()==QEvent::MouseMove){
-            QMouseEvent *m=(QMouseEvent*)event;
             if(mouse_press){
                 if(QApplication::mouseButtons()&Qt::LeftButton){
                     QPoint new_pos=QCursor::pos();

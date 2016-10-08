@@ -14,12 +14,14 @@
 #include <QBitmap>
 
 static const int list_margin=30;
-static const int menu_height=220;
+static const int menu_height=260;
 static const int window_width=440;
 static const int max_height=400;
 
+#define NEED_NO_TOP(x) setWindowFlags(windowFlags()&~Qt::WindowStaysOnTopHint);x;setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint);resizeEvent(0);show();
 
-MainWidget::MainWidget(QWidget *parent) : QWidget(parent),real_exit(false),auto_hide(false),auto_hide_widget(0)
+
+MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),real_exit(false),auto_hide(false)
 {
     pClipContent=new ClipBoardContent(this);
     pView=new QListView(this);
@@ -103,6 +105,9 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),real_exit(false),auto_
     pView->setFixedHeight(list_margin);
     setFixedHeight(menu_height);
 
+    setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint);
+
+    setContentsMargins(50,20,50,20);
     read_setting();
 
     tray_menu=new QMenu(this);
@@ -115,8 +120,21 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),real_exit(false),auto_
     setContextMenuPolicy(Qt::CustomContextMenu);
 
     setWindowIcon(QIcon(":/icon/resource/tray.png"));
-    setStyleSheet("*{font-weight:bold;color:white;}.QListView{color:white;background-color:#220000;}.QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}.QMenu{background-color:#000000;}.QMessageBox{border-image:url(:/pic/resource/background.png);}");
-    setWindowOpacity(0.8);
+    setStyleSheet(
+                  "*{font-weight:bold;color:white;background-color:#220000;}"
+                  ".QListView{color:white;background-color:#220000;}"
+                  ".QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}"
+                  ".QPushButton:hover{border-image:url(:/pic/resource/btn_hover.png);border-width:5px;}"
+                  ".QPushButton:pressed{border-image:url(:/pic/resource/btn_pressed.png);border-width:5px;}"
+                  ".QMenu{background-color:#110000;}"
+                  ".QMessageBox{border-image:url(:/pic/resource/background.png);"
+                  ".QPlainTextEdit{background-color:#220000;}"
+                  ".QTextBrowser{background-color:#220000;"
+                  " .QLineEdit{background-color:#220000;}"
+                  );
+
+
+    setWindowOpacity(0.9);
 
     connect(pClipContent,SIGNAL(data_changed(QQueue<Data>)),this,SLOT(on_data_changed(QQueue<Data>)));
     connect(pView,SIGNAL(clicked(QModelIndex)),this,SLOT(on_item_clicked(QModelIndex)));
@@ -205,16 +223,18 @@ void MainWidget::on_item_clicked(QModelIndex index){
 
 
 void MainWidget::on_setting_changed(){
+    write_setting();
+    emit setting_changed();
+    flush_settings();
+}
+
+void MainWidget::write_setting(){
     pSettings->setValue("enable",enable_watch->isChecked());
     pSettings->setValue("auto_save",enable_auto_save->isChecked());
-    auto_save_file_name->setEnabled(enable_auto_save->isChecked());
-    auto_save_file_name_btn->setEnabled(enable_auto_save->isChecked());
     pSettings->setValue("auto_save_file",auto_save_file_name->text());
     pSettings->setValue("max_record_count",record_count_edit->text().toInt());
     pSettings->setValue("auto_hide",auto_hide);
-    emit setting_changed();
-
-    flush_settings();
+    pSettings->setValue("pos",pos());
 }
 
 
@@ -226,12 +246,13 @@ void MainWidget::read_setting(){
     auto_save_file_name->setText(pSettings->value("auto_save_file","").toString());
     record_count_edit->setText(QString::number(pSettings->value("max_record_count",0).toInt()));
     auto_hide=pSettings->value("auto_hide",true).toBool();
-
+    move(pSettings->value("pos",QPoint(0,0)).toPoint());
     flush_settings();
 }
 
 void MainWidget::on_filter_btn_clicked(){
     TypeFilter type;
+    NEED_NO_TOP(
     if(type.exec()){
         int data_type=0;
         if(type.enable_color->isChecked())
@@ -247,11 +268,12 @@ void MainWidget::on_filter_btn_clicked(){
         pSettings->setValue("data_type",data_type);
         emit setting_changed();
     }
+    );
 }
 
 void MainWidget::on_edit_data(Data data, int index){
     DataEditWnd data_edit_wnd(data);
-    data_edit_wnd.exec();
+    NEED_NO_TOP(data_edit_wnd.exec());
     emit set_data(data_edit_wnd.data,index);
 }
 
@@ -265,7 +287,7 @@ void MainWidget::on_delete_record(){
 
 
 void MainWidget::on_set_auto_save_file(){
-    QString file_name=QFileDialog::getSaveFileName(this,"自动保存","","SFClipboard文件 (*.sfclp)");
+   NEED_NO_TOP(QString file_name=QFileDialog::getSaveFileName(this,"自动保存","","SFClipboard文件 (*.sfclp)"));
     if(file_name.isEmpty())
         return;
     if(file_name.right(6).toLower()!=".sfclp")
@@ -276,7 +298,7 @@ void MainWidget::on_set_auto_save_file(){
 
 
 void MainWidget::on_save_to_file(){
-    QString file_name=QFileDialog::getSaveFileName(this,"保存","","SFClipboard文件 (*.sfclp)");
+    NEED_NO_TOP(QString file_name=QFileDialog::getSaveFileName(this,"保存","","SFClipboard文件 (*.sfclp)"));
     if(file_name.isEmpty())
         return;
     if(file_name.right(6).toLower()!=".sfclp")
@@ -286,7 +308,7 @@ void MainWidget::on_save_to_file(){
 
 
 void MainWidget::on_load_from_file(){
-    QString file_name=QFileDialog::getOpenFileName(this,"保存","","SFClipboard文件 (*.sfclp)");
+    NEED_NO_TOP(QString file_name=QFileDialog::getOpenFileName(this,"保存","","SFClipboard文件 (*.sfclp)"));
     if(file_name.isEmpty())
         return;
     record_count_edit->setText("0");
@@ -296,14 +318,14 @@ void MainWidget::on_load_from_file(){
 
 
 void MainWidget::on_export_image(){
-    QString dir_name=QFileDialog::getExistingDirectory(this,"导出目录","", QFileDialog::DontResolveSymlinks);
+    NEED_NO_TOP(QString dir_name=QFileDialog::getExistingDirectory(this,"导出目录","", QFileDialog::DontResolveSymlinks));
     if(dir_name.isEmpty())
         return;
     emit export_image_sgn(dir_name);
 }
 
 void MainWidget::on_export_urls(){
-    QString file_name=QFileDialog::getSaveFileName(this,"保存","","文本文件 (*.txt)");
+    NEED_NO_TOP( QString file_name=QFileDialog::getSaveFileName(this,"保存","","文本文件 (*.txt)"));
     if(file_name.isEmpty())
         return;
     if(file_name.right(4).toLower()!=".txt")
@@ -313,14 +335,14 @@ void MainWidget::on_export_urls(){
 
 
 void MainWidget::on_export_text(){
-    QString dir_name=QFileDialog::getExistingDirectory(this,"导出目录","", QFileDialog::DontResolveSymlinks);
+    NEED_NO_TOP(QString dir_name=QFileDialog::getExistingDirectory(this,"导出目录","", QFileDialog::DontResolveSymlinks));
     if(dir_name.isEmpty())
         return;
     emit export_text_sgn(dir_name);
 }
 
 void MainWidget::on_export_text_single(){
-    QString file_name=QFileDialog::getSaveFileName(this,"保存","","文本文件 (*.txt)");
+    NEED_NO_TOP(QString file_name=QFileDialog::getSaveFileName(this,"保存","","文本文件 (*.txt)"));
     if(file_name.isEmpty())
         return;
     if(file_name.right(4).toLower()!=".txt")
@@ -330,14 +352,14 @@ void MainWidget::on_export_text_single(){
 
 
 void MainWidget::on_export_html(){
-    QString dir_name=QFileDialog::getExistingDirectory(this,"导出目录","", QFileDialog::DontResolveSymlinks);
+    NEED_NO_TOP(QString dir_name=QFileDialog::getExistingDirectory(this,"导出目录","", QFileDialog::DontResolveSymlinks));
     if(dir_name.isEmpty())
         return;
     emit export_html_sgn(dir_name);
 }
 
 void MainWidget::on_export_html_single(){
-    QString file_name=QFileDialog::getSaveFileName(this,"保存","","网页文件 (*.html)");
+    NEED_NO_TOP( QString file_name=QFileDialog::getSaveFileName(this,"保存","","网页文件 (*.html)"));
     if(file_name.isEmpty())
         return;
     if(file_name.right(5).toLower()!=".html")
@@ -362,7 +384,8 @@ void MainWidget::closeEvent(QCloseEvent *event){
 }
 
 void MainWidget::on_real_exit(){
-    if(QMessageBox::question(this,"退出","是否退出SFClipboard?",QMessageBox::No,QMessageBox::Yes)==QMessageBox::No){
+    NEED_NO_TOP(auto ret=QMessageBox::question(this,"退出","是否退出SFClipboard?",QMessageBox::No,QMessageBox::Yes));
+    if(ret==QMessageBox::No){
         return;
     }
     real_exit=true;
@@ -373,14 +396,14 @@ void MainWidget::on_customContextMenuRequested(){
     tray_menu->popup(QCursor::pos());
 }
 
-void MainWidget::resizeEvent(QResizeEvent *event){
+void MainWidget::resizeEvent(QResizeEvent *){
     QPalette pal;
     pal.setBrush(QPalette::Window,QBrush(QPixmap(":/pic/resource/background.png").scaled(size())));
     setPalette(pal);
 }
 
 void MainWidget::on_about(){
-    QMessageBox::about(this,"关于SFClipboard","作者：SkyFire\nQQ：1513008876\nE-mail：skyfireitdiy@hotmail.com\n项目地址：http://git.oschina.net/skyfireitdiy/SFClipboard\n版本："+version+"\n编译时间："+__DATE__+" "+__TIME__+"\n");
+    NEED_NO_TOP(QMessageBox::about(this,"关于SFClipboard","作者：SkyFire\nQQ：1513008876\nE-mail：skyfireitdiy@hotmail.com\n项目地址：http://git.oschina.net/skyfireitdiy/SFClipboard\n版本："+version+"\n编译时间："+__DATE__+" "+__TIME__+"\n"));
 }
 
 void MainWidget::on_clear_all(){
@@ -393,6 +416,10 @@ void MainWidget::on_auto_hide(){
 }
 
 void MainWidget::flush_settings(){
+
+    auto_save_file_name->setEnabled(enable_auto_save->isChecked());
+    auto_save_file_name_btn->setEnabled(enable_auto_save->isChecked());
+
     if(auto_hide){
         if(auto_hide_widget){
             delete auto_hide_widget;
@@ -406,4 +433,8 @@ void MainWidget::flush_settings(){
         }
         hide_btn->setText("悬浮");
     }
+}
+
+MainWidget::~MainWidget(){
+    write_setting();
 }

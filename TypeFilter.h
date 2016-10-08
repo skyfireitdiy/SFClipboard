@@ -19,6 +19,9 @@ public:
 public slots:
     void on_ok_btn_clicked();
     void on_cancle_btn_clicked();
+
+private:
+    void resizeEvent(QResizeEvent *);
 };
 
 #endif // TYPEFILTER_H

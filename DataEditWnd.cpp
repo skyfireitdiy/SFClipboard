@@ -122,7 +122,18 @@ DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data
 
     setLayout(main_layout);
 
-    setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint);
+
+    setContentsMargins(120,40,120,40);
+    setStyleSheet("*{font-weight:bold;color:white;}"
+                  ".QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}"
+                  ".QPushButton:hover{border-image:url(:/pic/resource/btn_hover.png);border-width:5px;}"
+                  ".QPushButton:pressed{border-image:url(:/pic/resource/btn_pressed.png);border-width:5px;}"
+                  ".QPlainTextEdit{background-color:#220000;} "
+                  ".QTextBrowser{background-color:#220000;}"
+                  ".QLineEdit{background-color:#220000;}"
+                  ".QListView{background-color:#220000;}"
+                  );
 
 
     connect(html_edit,SIGNAL(textChanged()),this,SLOT(on_html_chnaged()));
@@ -251,4 +262,10 @@ void DataEditWnd::on_save_image(){
             QMessageBox::warning(this,"警告","文件另存失败");
         }
     }
+}
+
+void DataEditWnd::resizeEvent(QResizeEvent *){
+    QPalette pal;
+    pal.setBrush(QPalette::Window,QBrush(QPixmap(":/pic/resource/background.png").scaled(size())));
+    setPalette(pal);
 }

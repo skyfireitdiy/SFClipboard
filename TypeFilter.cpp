@@ -34,7 +34,14 @@ TypeFilter::TypeFilter(QWidget *parent):QDialog(parent)
     enable_image->setChecked(data_type&IMAGE);
     enable_color->setChecked(data_type&COLOR);
 
-    setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint);
+    setContentsMargins(50,20,50,20);
+    setStyleSheet("*{font-weight:bold;color:white;}"
+                  ".QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}"
+                  ".QPushButton:hover{border-image:url(:/pic/resource/btn_hover.png);border-width:5px;}"
+                  ".QPushButton:pressed{border-image:url(:/pic/resource/btn_pressed.png);border-width:5px;}"
+                  );
+
 }
 
 void TypeFilter::on_ok_btn_clicked(){
@@ -43,4 +50,10 @@ void TypeFilter::on_ok_btn_clicked(){
 
 void TypeFilter::on_cancle_btn_clicked(){
     done(0);
+}
+
+void TypeFilter::resizeEvent(QResizeEvent *){
+    QPalette pal;
+    pal.setBrush(QPalette::Window,QBrush(QPixmap(":/pic/resource/background.png").scaled(size())));
+    setPalette(pal);
 }

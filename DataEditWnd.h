@@ -64,6 +64,9 @@ public slots:
     void on_cancel();
     void on_image_clear();
     void on_save_image();
+
+private:
+    void resizeEvent(QResizeEvent *);
 };
 
 #endif // DATAEDITWND_H

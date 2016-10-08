@@ -4,6 +4,8 @@
     </qresource>
     <qresource prefix="/pic">
         <file>resource/background.png</file>
+        <file>resource/btn_pressed.png</file>
+        <file>resource/btn_hover.png</file>
         <file>resource/btn.png</file>
     </qresource>
 </RCC>

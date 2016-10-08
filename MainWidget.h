@@ -20,7 +20,7 @@ class MainWidget : public QWidget
     Q_OBJECT
 public:
     explicit MainWidget(QWidget *parent = 0);
-
+    ~MainWidget();
 signals:
     void item_clicked(int);
     void item_need_edit(int);
@@ -108,9 +108,10 @@ private:
 
     QString get_abstract(const Data &data)const;
     void read_setting();
+    void write_setting();
 
     void closeEvent(QCloseEvent *event);
-    void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *);
     void flush_settings();
 };
 
