@@ -5,7 +5,7 @@
 
 QApplication *pApp=0;
 QSettings *pSettings;
-QString version="1.1";
+QString version="1.2";
 MainWidget *pMainWidget=nullptr;
 
 int main(int argc,char ** argv){

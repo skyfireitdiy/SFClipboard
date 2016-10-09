@@ -1,0 +1,5 @@
+本软件为开源项目，项目地址：[开源中国](http://git.oschina.net/skyfireitdiy/SFClipboard)，任何人可以下载编辑源码，并可以以任何形式重新发布。虽然不是强制，但仍希望可以继续保持开源。另外，请保留原始作者信息：
+
+Author：SkyFire
+QQ：1513008876
+E-mail：skyfireitdiy@hotmail.com

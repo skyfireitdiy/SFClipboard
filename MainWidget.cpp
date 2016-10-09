@@ -410,6 +410,12 @@ void MainWidget::resizeEvent(QResizeEvent *){
     QPalette pal;
     pal.setBrush(QPalette::Window,QBrush(QPixmap(":/pic/resource/background.png").scaled(size())));
     setPalette(pal);
+
+    QRect widget_rect=geometry();
+    QRect desktop_rect=pApp->desktop()->geometry();
+    if(!auto_hide_widget&&widget_rect.bottom()>desktop_rect.bottom()){
+        move(widget_rect.x(),desktop_rect.bottom()-widget_rect.height());
+    }
     emit rect_changed();
 }
 
@@ -468,3 +474,5 @@ void MainWidget::on_hot_key(int num){
 }
 
 #endif
+
+#undef NEED_NO_TOP

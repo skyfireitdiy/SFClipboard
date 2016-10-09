@@ -24,7 +24,8 @@ CONFIG+= c++11
 
 DISTFILES += \
     readme.md \
-    icon.rc
+    icon.rc \
+    version.md
 
 RESOURCES += \
     resource.qrc
