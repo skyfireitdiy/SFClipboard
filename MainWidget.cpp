@@ -112,7 +112,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     pView->setFixedHeight(list_margin);
     setFixedHeight(menu_height);
 
-    setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint);
+    //setAttribute(Qt::WA_TranslucentBackground);
+    setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint|Qt::Tool);
 
     setContentsMargins(50,20,50,20);
 
@@ -186,6 +187,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     connect(about_btn,SIGNAL(clicked(bool)),this,SLOT(on_about()));
     connect(rel_close,SIGNAL(clicked(bool)),this,SLOT(on_real_exit()));
     connect(hide_btn,SIGNAL(clicked(bool)),this,SLOT(on_auto_hide()));
+    connect(pView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_edit_btn_clicked()));
 
 #ifdef _WIN32
     setHook();
@@ -395,10 +397,12 @@ void MainWidget::on_show_hide_widget(){
 
 void MainWidget::closeEvent(QCloseEvent *event){
     hide();
-    if(!real_exit)
+    if(!real_exit){
         event->ignore();
-    else
+    }else{
         event->accept();
+        pApp->exit(0);
+    }
 }
 
 void MainWidget::on_real_exit(){
