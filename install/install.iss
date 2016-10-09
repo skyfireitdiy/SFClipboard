@@ -48,7 +48,7 @@ Source: "{#ProjectDir}\build\release\Qt5Core.dll"; DestDir: "{app}"; Flags: igno
 Source: "{#ProjectDir}\build\release\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectDir}\build\release\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectDir}\build\release\SFClipboard.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ProjectDir}\build\release\platforms\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#ProjectDir}\build\release\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
