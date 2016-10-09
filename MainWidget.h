@@ -69,7 +69,7 @@ public slots:
     void on_auto_hide();
 
 private:
-    ClipBoardContent *pClipContent;
+    ClipBoardContent* pClipContent;
     QListView *pView;
     QStandardItemModel *pModel;
     QCheckBox *enable_watch;

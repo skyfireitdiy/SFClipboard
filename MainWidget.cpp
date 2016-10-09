@@ -12,6 +12,8 @@
 #include <QMouseEvent>
 #include <QDesktopWidget>
 #include <QBitmap>
+#include <thread>
+#include <QEventLoop>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -28,7 +30,7 @@ static const int max_height=400;
 
 MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),real_exit(false),auto_hide(false)
 {
-    pClipContent=new ClipBoardContent(this);
+
     pView=new QListView(this);
     pModel=new QStandardItemModel(this);
     pView->setModel(pModel);
@@ -113,7 +115,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint);
 
     setContentsMargins(50,20,50,20);
-    read_setting();
+
 
     tray_menu=new QMenu(this);
     tray_menu->addAction("显示/隐藏主界面",this,SLOT(on_show_hide_widget()));
@@ -141,15 +143,29 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
 
     setWindowOpacity(0.9);
 
+
+
+    pClipContent=new ClipBoardContent(this);
     connect(pClipContent,SIGNAL(data_changed(QQueue<Data>)),this,SLOT(on_data_changed(QQueue<Data>)));
-    connect(pView,SIGNAL(clicked(QModelIndex)),this,SLOT(on_item_clicked(QModelIndex)));
     connect(this,SIGNAL(item_need_edit(int)),pClipContent,SLOT(on_data_edit(int)));
     connect(pClipContent,SIGNAL(edit_data(Data,int)),this,SLOT(on_edit_data(Data,int)));
     connect(this,SIGNAL(set_data(Data,int)),pClipContent,SLOT(on_set_data(Data,int)));
     connect(this,SIGNAL(item_clicked(int)),pClipContent,SLOT(on_set_clip_data(int)));
     connect(this,SIGNAL(setting_changed()),pClipContent,SLOT(read_setting()));
     connect(this,SIGNAL(delete_record(int)),pClipContent,SLOT(on_delete_record(int)));
+    connect(this,SIGNAL(save_to_file_sgn(QString)),pClipContent,SLOT(on_save_to_file(QString)));
+    connect(this,SIGNAL(load_from_file_sgn(QString)),pClipContent,SLOT(on_load_from_file(QString)));
+    connect(this,SIGNAL(export_image_sgn(QString)),pClipContent,SLOT(on_export_image(QString)));
+    connect(this,SIGNAL(export_urls_sgn(QString)),pClipContent,SLOT(on_export_urls(QString)));
+    connect(this,SIGNAL(export_text_one_sgn(QString)),pClipContent,SLOT(on_export_text_single(QString)));
+    connect(this,SIGNAL(export_text_sgn(QString)),pClipContent,SLOT(on_export_text(QString)));
+    connect(this,SIGNAL(export_html_sgn(QString)),pClipContent,SLOT(on_export_html(QString)));
+    connect(this,SIGNAL(export_html_one_sgn(QString)),pClipContent,SLOT(on_export_html_single(QString)));
+    connect(this,SIGNAL(clear_all_sgn()),pClipContent,SLOT(on_clear_all()));
 
+
+
+    connect(pView,SIGNAL(clicked(QModelIndex)),this,SLOT(on_item_clicked(QModelIndex)));
     connect(enable_watch,SIGNAL(stateChanged(int)),this,SLOT(on_setting_changed()));
     connect(filter_btn,SIGNAL(clicked(bool)),this,SLOT(on_filter_btn_clicked()));
     connect(edit_btn,SIGNAL(clicked(bool)),this,SLOT(on_edit_btn_clicked()));
@@ -157,25 +173,16 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     connect(enable_auto_save,SIGNAL(stateChanged(int)),this,SLOT(on_setting_changed()));
     connect(auto_save_file_name_btn,SIGNAL(clicked(bool)),this,SLOT(on_set_auto_save_file()));
     connect(save_to_file,SIGNAL(clicked(bool)),this,SLOT(on_save_to_file()));
-    connect(this,SIGNAL(save_to_file_sgn(QString)),pClipContent,SLOT(on_save_to_file(QString)));
     connect(load_from_file,SIGNAL(clicked(bool)),this,SLOT(on_load_from_file()));
-    connect(this,SIGNAL(load_from_file_sgn(QString)),pClipContent,SLOT(on_load_from_file(QString)));
     connect(record_count_set_btn,SIGNAL(clicked(bool)),this,SLOT(on_setting_changed()));
     connect(export_image,SIGNAL(clicked(bool)),this,SLOT(on_export_image()));
-    connect(this,SIGNAL(export_image_sgn(QString)),pClipContent,SLOT(on_export_image(QString)));
     connect(export_urls,SIGNAL(clicked(bool)),this,SLOT(on_export_urls()));
-    connect(this,SIGNAL(export_urls_sgn(QString)),pClipContent,SLOT(on_export_urls(QString)));
     connect(export_text,SIGNAL(clicked(bool)),this,SLOT(on_export_text()));
-    connect(this,SIGNAL(export_text_sgn(QString)),pClipContent,SLOT(on_export_text(QString)));
     connect(export_text_one,SIGNAL(clicked(bool)),this,SLOT(on_export_text_single()));
-    connect(this,SIGNAL(export_text_one_sgn(QString)),pClipContent,SLOT(on_export_text_single(QString)));
     connect(export_html,SIGNAL(clicked(bool)),this,SLOT(on_export_html()));
-    connect(this,SIGNAL(export_html_sgn(QString)),pClipContent,SLOT(on_export_html(QString)));
     connect(export_html_one,SIGNAL(clicked(bool)),this,SLOT(on_export_html_single()));
-    connect(this,SIGNAL(export_html_one_sgn(QString)),pClipContent,SLOT(on_export_html_single(QString)));
     connect(this,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(on_customContextMenuRequested()));
     connect(clear_all,SIGNAL(clicked(bool)),this,SLOT(on_clear_all()));
-    connect(this,SIGNAL(clear_all_sgn()),pClipContent,SLOT(on_clear_all()));
     connect(about_btn,SIGNAL(clicked(bool)),this,SLOT(on_about()));
     connect(rel_close,SIGNAL(clicked(bool)),this,SLOT(on_real_exit()));
     connect(hide_btn,SIGNAL(clicked(bool)),this,SLOT(on_auto_hide()));
@@ -184,6 +191,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     setHook();
 #endif
 
+    read_setting();
 }
 
 

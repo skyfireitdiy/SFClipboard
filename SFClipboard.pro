@@ -8,7 +8,8 @@ HEADERS += \
     TypeFilter.h \
     DataEditWnd.h \
     AutoHide.h \
-    WinHook.h
+    WinHook.h \
+    SingleApplication.h
 
 SOURCES += \
     MainWidget.cpp \
@@ -18,14 +19,19 @@ SOURCES += \
     TypeFilter.cpp \
     DataEditWnd.cpp \
     AutoHide.cpp \
-    WinHook.cpp
+    WinHook.cpp \
+    SingleApplication.cpp
 
 CONFIG+= c++11
 
 DISTFILES += \
     readme.md \
     icon.rc \
-    version.md
+    version.md \
+    install/information_after.txt \
+    install/information_before.txt \
+    install/install.iss \
+    install/licence.txt
 
 RESOURCES += \
     resource.qrc

@@ -2,8 +2,8 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SFClipboard"
-#define MyAppVersion "1.2"
-#define MyAppPublisher "Ìì»ðÈí¼þ, Inc."
+#define MyAppVersion "1.3"
+#define MyAppPublisher "SkyFire, Inc."
 #define MyAppURL "http://git.oschina.net/skyfireitdiy/SFClipboard"
 #define MyAppExeName "SFClipboard.exe"
 #define ProjectDir ".."
