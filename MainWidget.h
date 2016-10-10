@@ -67,6 +67,7 @@ public slots:
     void on_about();
     void on_clear_all();
     void on_auto_hide();
+    void on_tray_active(QSystemTrayIcon::ActivationReason reason);
 
 private:
     ClipBoardContent* pClipContent;

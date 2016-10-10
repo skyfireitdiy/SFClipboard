@@ -124,13 +124,13 @@ DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data
     setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint);
 
     setContentsMargins(120,40,120,40);
-    setStyleSheet("*{font-weight:bold;color:white;}"
+    setStyleSheet("*{font-weight:bold;color:white;font-family:'微软雅黑';}"
+                  ".QLineEdit{background-color:#FFFFFF;color:000000;}"
                   ".QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}"
                   ".QPushButton:hover{border-image:url(:/pic/resource/btn_hover.png);border-width:5px;}"
-                  ".QPushButton:pressed{border-image:url(:/pic/resource/btn_pressed.png);border-width:5px;}"
+                  ".QPushButton:disabled{border-image:url(:/pic/resource/btn_pressed.png);border-width:5px;}"
                   ".QPlainTextEdit{background-color:#220000;} "
                   ".QTextBrowser{background-color:#220000;}"
-                  ".QLineEdit{background-color:#220000;}"
                   ".QListView{background-color:#220000;}"
                   );
 

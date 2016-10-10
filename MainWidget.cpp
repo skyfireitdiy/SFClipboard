@@ -125,26 +125,25 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     tray_icon->show();
     tray_icon->setContextMenu(tray_menu);
 
+    read_setting();
+
     setContextMenuPolicy(Qt::CustomContextMenu);
 
     setWindowIcon(QIcon(":/icon/resource/tray.png"));
     setStyleSheet(
-                  "*{font-weight:bold;color:white;background-color:#220000;}"
+                  "*{font-weight:bold;color:white;font-family:'微软雅黑';}"
+                  ".QLineEdit{background-color:#FFFFFF;color:000000;}"
                   ".QListView{color:white;background-color:#220000;}"
                   ".QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}"
                   ".QPushButton:hover{border-image:url(:/pic/resource/btn_hover.png);border-width:5px;}"
-                  ".QPushButton:pressed{border-image:url(:/pic/resource/btn_pressed.png);border-width:5px;}"
+                  ".QPushButton:disabled{border-image:url(:/pic/resource/btn_pressed.png);border-width:5px;}"
                   ".QMenu{background-color:#110000;}"
-                  ".QMessageBox{border-image:url(:/pic/resource/background.png);"
+                  ".QMessageBox{border-image:url(:/pic/resource/background.png);}"
                   ".QPlainTextEdit{background-color:#220000;}"
                   ".QTextBrowser{background-color:#220000;"
-                  " .QLineEdit{background-color:#220000;}"
                   );
 
-
     setWindowOpacity(0.9);
-
-
 
     pClipContent=new ClipBoardContent(this);
     connect(pClipContent,SIGNAL(data_changed(QQueue<Data>)),this,SLOT(on_data_changed(QQueue<Data>)));
@@ -188,12 +187,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     connect(rel_close,SIGNAL(clicked(bool)),this,SLOT(on_real_exit()));
     connect(hide_btn,SIGNAL(clicked(bool)),this,SLOT(on_auto_hide()));
     connect(pView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_edit_btn_clicked()));
+    connect(tray_icon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(on_tray_active(QSystemTrayIcon::ActivationReason)));
 
 #ifdef _WIN32
     setHook();
 #endif
-
-    read_setting();
 }
 
 
@@ -271,7 +269,7 @@ void MainWidget::read_setting(){
 }
 
 void MainWidget::on_filter_btn_clicked(){
-    TypeFilter type;
+    TypeFilter type(this);
     NEED_NO_TOP(
     if(type.exec()){
         int data_type=0;
@@ -292,7 +290,7 @@ void MainWidget::on_filter_btn_clicked(){
 }
 
 void MainWidget::on_edit_data(Data data, int index){
-    DataEditWnd data_edit_wnd(data);
+    DataEditWnd data_edit_wnd(data,this);
     NEED_NO_TOP(data_edit_wnd.exec());
     emit set_data(data_edit_wnd.data,index);
 }
@@ -461,6 +459,12 @@ void MainWidget::flush_settings(){
             auto_hide_widget=0;
         }
         hide_btn->setText("悬浮");
+    }
+}
+
+void MainWidget::on_tray_active(QSystemTrayIcon::ActivationReason reason){
+    if(reason==QSystemTrayIcon::DoubleClick){
+        on_show_hide_widget();
     }
 }
 
