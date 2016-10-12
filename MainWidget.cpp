@@ -21,7 +21,7 @@
 #endif
 
 static const int list_margin=30;
-static const int menu_height=260;
+static const int menu_height=300;
 static const int window_width=440;
 static const int max_height=400;
 
@@ -34,6 +34,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     pView=new QListView(this);
     pModel=new QStandardItemModel(this);
     pView->setModel(pModel);
+    pView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     QGridLayout *top_layout=new QGridLayout;
     QVBoxLayout *main_layout=new QVBoxLayout;
 
@@ -479,13 +480,19 @@ MainWidget::~MainWidget(){
 
 #ifdef _WIN32
 
-void MainWidget::on_hot_key(int num){
+void MainWidget::on_hot_copy(int num){
     if(num<pModel->rowCount()){
         emit item_clicked(num);
         keybd_event(VK_CONTROL,0,0,0);
         keybd_event('V',0,0,0);
         keybd_event('V',0,KEYEVENTF_KEYUP,0);
         keybd_event(VK_CONTROL,0,KEYEVENTF_KEYUP,0);
+    }
+}
+
+void MainWidget::on_hot_delete(int num){
+    if(num<pModel->rowCount()){
+        emit delete_record(num);
     }
 }
 

@@ -7,7 +7,7 @@
 
 QApplication *pApp=0;
 QSettings *pSettings;
-QString version="1.5";
+QString version="1.6";
 MainWidget *pMainWidget=nullptr;
 QString programName="SFClipboard";
 

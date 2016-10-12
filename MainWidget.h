@@ -23,7 +23,8 @@ public:
     ~MainWidget();
 
 #ifdef _WIN32
-    void on_hot_key(int num);
+    void on_hot_copy(int num);
+    void on_hot_delete(int num);
 #endif
 
 signals:
