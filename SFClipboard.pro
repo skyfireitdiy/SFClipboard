@@ -9,7 +9,8 @@ HEADERS += \
     DataEditWnd.h \
     AutoHide.h \
     WinHook.h \
-    SingleApplication.h
+    SingleApplication.h \
+    SFLanguage.h
 
 SOURCES += \
     MainWidget.cpp \
@@ -20,7 +21,8 @@ SOURCES += \
     DataEditWnd.cpp \
     AutoHide.cpp \
     WinHook.cpp \
-    SingleApplication.cpp
+    SingleApplication.cpp \
+    SFLanguage.cpp
 
 CONFIG+= c++11
 
@@ -31,10 +33,18 @@ DISTFILES += \
     install/information_after.txt \
     install/information_before.txt \
     install/install.iss \
-    install/licence.txt
+    install/licence.txt \
+    windows.bat \
+    install/icon.ico \
+    bin/lang.ini
 
 RESOURCES += \
     resource.qrc
 
 RC_FILE+=icon.rc
+
+OBJECTS_DIR = $$PWD/obj
+MOC_DIR= $$PWD/moc
+UI_DIR= $$PWD/ui
+DESTDIR = $$PWD/bin
 

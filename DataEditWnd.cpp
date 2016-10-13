@@ -6,57 +6,60 @@
 #include <QFileDialog>
 #include <Global.h>
 #include <QDebug>
+#include <SFLanguage.h>
 
+EXTERN_SF_LAN
 
 DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data_t),color_changed(false)
 {
-    setWindowTitle("编辑数据");
-    text_group=new QGroupBox("文本",this);
+    setWindowTitle(GS(EDIT_DATA));
+    text_group=new QGroupBox(GS(TEXT),this);
     text_edit=new QPlainTextEdit(data.text,this);
-    html_group=new QGroupBox("HTML",this);
-    html_edit_group=new QGroupBox("编辑",this);
-    html_show_group=new QGroupBox("预览",this);
+    html_group=new QGroupBox(GS(HTML),this);
+    html_edit_group=new QGroupBox(GS(EDIT),this);
+    html_show_group=new QGroupBox(GS(PREVIEW),this);
     html_edit=new QPlainTextEdit(data.html,this);
     html_show=new QTextBrowser(this);
     html_show->setHtml(data.html);
     html_show->setReadOnly(true);
-    image_group=new QGroupBox("图片",this);
+    image_group=new QGroupBox(GS(PICTURE),this);
     image_show=new QLabel(this);
     QPixmap pixmap=QPixmap::fromImage(qvariant_cast<QImage>(data.image));
     if(!pixmap.isNull())
         image_show->setPixmap(pixmap.scaled(600,400,Qt::KeepAspectRatio));
     image_path=new QLineEdit(this);
     image_path->setReadOnly(true);
-    image_path_tip=new QLabel("路径",this);
+    image_path_tip=new QLabel(GS(PATH),this);
     image_path_tip->setAlignment(Qt::AlignCenter);
-    get_image_path_btn=new QPushButton("浏览",this);
-    image_clear_btn=new QPushButton("清空",this);
-    save_current_image=new QPushButton("另存图片",this);
-    urls_group=new QGroupBox("URL",this);
+    get_image_path_btn=new QPushButton(GS(BROWSE),this);
+    image_clear_btn=new QPushButton(GS(CLEAR),this);
+    save_current_image=new QPushButton(GS(SAVE_AS_IMAGE),this);
+    urls_group=new QGroupBox(GS(URL),this);
     urls_list=new QListView(this);
     urls_model=new QStandardItemModel(this);
     for(auto p:data.urls){
         urls_model->appendRow(new QStandardItem(p.toString()));
     }
     urls_list->setModel(urls_model);
-    urls_del_btn=new QPushButton("删除",this);
+    urls_del_btn=new QPushButton(GS(DELETE),this);
     urls_edit=new QLineEdit(this);
-    urls_add_btn=new QPushButton("增加",this);
-    color_group=new QGroupBox("颜色",this);
+    urls_add_btn=new QPushButton(GS(INCREASE),this);
+    color_group=new QGroupBox(GS(COLOR),this);
     color_show=new QLabel(this);
-    green_label=new QLabel("G",this);
+    color_show->setFixedWidth(50);
+    green_label=new QLabel(GS(G),this);
     green_label->setAlignment(Qt::AlignCenter);
-    red_label=new QLabel("R",this);
+    red_label=new QLabel(GS(R),this);
     red_label->setAlignment(Qt::AlignCenter);
-    blue_label=new QLabel("B",this);
+    blue_label=new QLabel(GS(B),this);
     blue_label->setAlignment(Qt::AlignCenter);
     QColor temp_color=qvariant_cast<QColor>(data.color);
     red_edit=new QLineEdit(QString::number(temp_color.red()),this);
     green_edit=new QLineEdit(QString::number(temp_color.green()),this);
     blue_edit=new QLineEdit(QString::number(temp_color.blue()),this);
     on_color_changed(temp_color);
-    ok_btn=new QPushButton("确定",this);
-    cancel_btn=new QPushButton("取消",this);
+    ok_btn=new QPushButton(GS(SURE),this);
+    cancel_btn=new QPushButton(GS(CANCEL),this);
 
 
 
@@ -162,7 +165,7 @@ void DataEditWnd::on_html_chnaged(){
 }
 
 void DataEditWnd::on_image_path_btn_clicked(){
-    QString file_name=QFileDialog::getOpenFileName(this,"打开图片","","图片(*.png *.xpm *.jpg *.bmp)");
+    QString file_name=QFileDialog::getOpenFileName(this,GS(OPEN_IMAGE),"",GS(IMAGE)+"(*.png *.xpm *.jpg *.bmp)");
     if(file_name.isEmpty())
         return;
     image_path->setText(file_name);
@@ -206,7 +209,7 @@ void DataEditWnd::on_ok(){
         data.type&=~HTML;
     }
     if(!image_path->text().isEmpty()){
-        if(image_path->text()=="NULL"){
+        if(image_path->text()==GS(NULL_STR)){
             data.image.clear();
             data.type&=~IMAGE;
         }else{
@@ -238,15 +241,15 @@ void DataEditWnd::on_cancel(){
 void DataEditWnd::on_image_clear(){
     QPixmap pixmap;
     image_show->setPixmap(pixmap);
-    image_path->setText("NULL");
+    image_path->setText(GS(NULL_STR));
 }
 
 void DataEditWnd::on_save_image(){
     if(image_path->text().isEmpty()&&data.image.isNull()){
-        QMessageBox::warning(this,"警告","没有图片数据");
+        QMessageBox::warning(this,GS(WARNING),GS(NO_IMAGE_DATA));
         return;
     }
-    QString file_name=QFileDialog::getSaveFileName(this,"另存","","图片(*.png *.xpm *.jpg *.bmp)");
+    QString file_name=QFileDialog::getSaveFileName(this,GS(SAVE_AS),"",GS(IMAGE)+"(*.png *.xpm *.jpg *.bmp)");
     if(file_name.isEmpty())
         return;
     QString end_str=file_name.right(4).toLower();
@@ -254,11 +257,11 @@ void DataEditWnd::on_save_image(){
         file_name+=".png";
     if(image_path->text().isEmpty()){
         if(!QPixmap::fromImage(qvariant_cast<QImage>(data.image)).save(file_name)){
-            QMessageBox::warning(this,"警告","文件另存失败");
+            QMessageBox::warning(this,GS(WARNING),GS(FILE_SAVE_ERROR));
         }
     }else{
         if(!QPixmap(image_path->text()).save(file_name)){
-            QMessageBox::warning(this,"警告","文件另存失败");
+            QMessageBox::warning(this,GS(WARNING),GS(FILE_SAVE_ERROR));
         }
     }
 }

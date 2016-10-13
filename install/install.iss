@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SFClipboard"
-#define MyAppVersion "1.6"
+#define MyAppVersion "1.7"
 #define MyAppPublisher "SkyFire, Inc."
 #define MyAppURL "http://git.oschina.net/skyfireitdiy/SFClipboard"
 #define MyAppExeName "SFClipboard.exe"
@@ -41,15 +41,15 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "{#ProjectDir}\build\release\SFClipboard.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ProjectDir}\build\release\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ProjectDir}\build\release\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ProjectDir}\build\release\libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ProjectDir}\build\release\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ProjectDir}\build\release\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ProjectDir}\build\release\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ProjectDir}\build\release\SFClipboard.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ProjectDir}\build\release\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#ProjectDir}\bin\SFClipboard.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ProjectDir}\bin\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ProjectDir}\bin\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ProjectDir}\bin\libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ProjectDir}\bin\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ProjectDir}\bin\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ProjectDir}\bin\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ProjectDir}\bin\SFClipboard.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ProjectDir}\bin\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
