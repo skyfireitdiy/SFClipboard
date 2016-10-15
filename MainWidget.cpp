@@ -22,6 +22,12 @@ SF_LAN_INIT(lang.ini,chinese)
 #ifdef _WIN32
 #include <windows.h>
 #include <WinHook.h>
+#else
+#ifdef __unix
+#include <linux/input.h>
+#include <unistd.h>
+#include <LinuxHook.h>
+#endif
 #endif
 
 static const int list_margin=30;
@@ -136,7 +142,13 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
 
     setWindowIcon(QIcon(":/icon/resource/tray.png"));
     setStyleSheet(
+            #ifdef _WIN32
                   "*{font-weight:bold;color:white;font-family:'微软雅黑';}"
+            #else
+            #ifdef __unix
+                "*{font-weight:bold;color:white;font-family:'微软雅黑';background-color:#220000;}"
+            #endif
+            #endif
                   ".QLineEdit{background-color:#FFFFFF;color:000000;}"
                   ".QListView{color:white;background-color:#220000;}"
                   ".QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}"
@@ -194,9 +206,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     connect(pView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_edit_btn_clicked()));
     connect(tray_icon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(on_tray_active(QSystemTrayIcon::ActivationReason)));
 
-#ifdef _WIN32
     setHook();
-#endif
 }
 
 
@@ -475,22 +485,28 @@ void MainWidget::on_tray_active(QSystemTrayIcon::ActivationReason reason){
 
 MainWidget::~MainWidget(){
     write_setting();
-
-#ifdef _WIN32
     unHook();
-#endif
-
 }
 
-#ifdef _WIN32
 
 void MainWidget::on_hot_copy(int num){
     if(num<pModel->rowCount()){
         emit item_clicked(num);
+#ifdef _WIN32
         keybd_event(VK_CONTROL,0,0,0);
         keybd_event('V',0,0,0);
         keybd_event('V',0,KEYEVENTF_KEYUP,0);
         keybd_event(VK_CONTROL,0,KEYEVENTF_KEYUP,0);
+
+#else
+#ifdef __unix
+
+        reportkey(KEY_RIGHTCTRL,1);
+        reportkey(KEY_V,1);
+        reportkey(KEY_V,0);
+        reportkey(KEY_RIGHTCTRL,0);
+#endif
+#endif
     }
 }
 
@@ -500,6 +516,6 @@ void MainWidget::on_hot_delete(int num){
     }
 }
 
-#endif
+
 
 #undef NEED_NO_TOP

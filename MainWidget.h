@@ -22,10 +22,7 @@ public:
     explicit MainWidget(QWidget *parent = 0);
     ~MainWidget();
 
-#ifdef _WIN32
-    void on_hot_copy(int num);
-    void on_hot_delete(int num);
-#endif
+
 
 signals:
     void item_clicked(int);
@@ -69,6 +66,10 @@ public slots:
     void on_clear_all();
     void on_auto_hide();
     void on_tray_active(QSystemTrayIcon::ActivationReason reason);
+
+
+    void on_hot_copy(int num);
+    void on_hot_delete(int num);
 
 private:
     ClipBoardContent* pClipContent;

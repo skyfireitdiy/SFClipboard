@@ -10,7 +10,8 @@ HEADERS += \
     AutoHide.h \
     WinHook.h \
     SingleApplication.h \
-    SFLanguage.h
+    SFLanguage.h \
+    LinuxHook.h
 
 SOURCES += \
     MainWidget.cpp \
@@ -22,7 +23,8 @@ SOURCES += \
     AutoHide.cpp \
     WinHook.cpp \
     SingleApplication.cpp \
-    SFLanguage.cpp
+    SFLanguage.cpp \
+    LinuxHook.cpp
 
 CONFIG+= c++11
 

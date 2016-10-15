@@ -16,4 +16,5 @@ extern QString version;
 
 
 
+
 #endif // GLOBAL_H
