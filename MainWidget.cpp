@@ -518,7 +518,9 @@ void MainWidget::on_hot_delete(int num){
 
 
 void MainWidget::on_need_root(){
+    NEED_NO_TOP(
     QMessageBox::warning(this,GS(WARNING),GS(ROOT_REQUEST),QMessageBox::Ok);
+    );
 }
 
 

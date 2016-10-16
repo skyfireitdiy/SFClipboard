@@ -38,7 +38,7 @@ void setHook(){
         QObject::connect(&hook,SIGNAL(hot_copy(int)),pMainWidget,SLOT(on_hot_copy(int)));
         QObject::connect(&hook,SIGNAL(hot_delete(int)),pMainWidget,SLOT(on_hot_delete(int)));
         QObject::connect(&hook,SIGNAL(clear()),pMainWidget,SLOT(on_clear_all()));
-        QObject::connect(&hook,SIGNAL(need_root()),pMainWidget,SLOT(on_need_root)));
+        QObject::connect(&hook,SIGNAL(need_root()),pMainWidget,SLOT(on_need_root()));
         QEventLoop event;
         QObject::connect(&hook,SIGNAL(exit_hook()),&event,SLOT(quit()));
         hook.start();
