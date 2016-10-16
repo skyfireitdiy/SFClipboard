@@ -38,6 +38,7 @@ void setHook(){
         QObject::connect(&hook,SIGNAL(hot_copy(int)),pMainWidget,SLOT(on_hot_copy(int)));
         QObject::connect(&hook,SIGNAL(hot_delete(int)),pMainWidget,SLOT(on_hot_delete(int)));
         QObject::connect(&hook,SIGNAL(clear()),pMainWidget,SLOT(on_clear_all()));
+        QObject::connect(&hook,SIGNAL(need_root()),pMainWidget,SLOT(on_need_root)));
         QEventLoop event;
         QObject::connect(&hook,SIGNAL(exit_hook()),&event,SLOT(quit()));
         hook.start();
@@ -82,8 +83,8 @@ void LinuxKeyHook::start(){
     }
     keys_fd = open (__file_name.toLocal8Bit(), O_RDONLY);
     if (keys_fd <= 0){
-        //QMessageBox::warning(pMainWidget,GS(WARNING),GS(ROOT_REQUEST),QMessageBox::Ok);
         emit exit_hook();
+        emit need_root();
         return;
     }
     bool ctrl=false;
@@ -99,10 +100,8 @@ void LinuxKeyHook::start(){
         key_mu.unlock();
         if (read(keys_fd, &t, sizeof (t)) == sizeof (t))  {
             if (t.type == EV_KEY){
-                qDebug()<<t.code;
                 if (t.value == 1){
                     if(t.code==KEY_LEFTCTRL){
-                        qDebug()<<"Ctrl down";
                         ctrl=true;
                     }else if(t.code==KEY_LEFTALT){
                         alt=true;
@@ -162,7 +161,6 @@ void LinuxKeyHook::start(){
                     }
                 }else if(t.value ==0){
                     if(t.code==KEY_LEFTCTRL){
-                        qDebug()<<"Ctrl up";
                         ctrl=false;
                     }else if(t.code==KEY_LEFTALT){
                         alt=false;
@@ -187,7 +185,6 @@ void reportkey(uint16_t keycode, int32_t value)
     gettimeofday(&event.time,0);
     write(fd, &event, sizeof(struct input_event));
     close(fd);
-    qDebug()<<"write";
 }
 
 

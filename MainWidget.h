@@ -70,6 +70,7 @@ public slots:
 
     void on_hot_copy(int num);
     void on_hot_delete(int num);
+    void on_need_root();
 
 private:
     ClipBoardContent* pClipContent;

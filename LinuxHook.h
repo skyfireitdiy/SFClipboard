@@ -11,6 +11,7 @@ signals:
     void hot_delete(int num);
     void clear();
     void exit_hook();
+    void need_root();
 public:
     LinuxKeyHook(QObject *parent=0);
     void start();
