@@ -5,6 +5,8 @@
 #include <QMessageBox>
 #include <SingleApplication.h>
 
+EXTERN_SF_LAN
+
 QApplication *pApp=0;
 QSettings *pSettings;
 QString version="1.8";
@@ -14,7 +16,7 @@ QString programName="SFClipboard";
 int main(int argc,char ** argv){
     SingleApplication app(argc,argv,programName);
     if(app.isRunning()){
-        QMessageBox::information(nullptr,"消息","SFClipboard已在运行，请见托盘图标",QMessageBox::Ok);
+        QMessageBox::information(nullptr,GS(MESSAGE),GS(STILL_RUN),QMessageBox::Ok);
         return 0;
     }
     qRegisterMetaType<QQueue<Data>>("QQueue<Data>");
