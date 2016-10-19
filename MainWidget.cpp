@@ -40,7 +40,6 @@ static const int max_height=400;
 
 MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),real_exit(false),auto_hide(false)
 {
-
     pView=new QListView(this);
     pModel=new QStandardItemModel(this);
     pView->setModel(pModel);
@@ -445,7 +444,7 @@ void MainWidget::resizeEvent(QResizeEvent *){
 }
 
 void MainWidget::on_about(){
-    NEED_NO_TOP(QMessageBox::about(this,GS(ABOUT_MESSAGE),GS(AUTHOR)+"：SkyFire\n"+GS(QQ)+"：1513008876\n"+GS(EMAIL)+"：skyfireitdiy@hotmail.com\n"+GS(PROJECT_ADDRESS)+"：http://git.oschina.net/skyfireitdiy/SFClipboard\n"+GS(VERSION)+"："+version+"\n"+GS(BUILD_TIME)+"："+__DATE__+" "+__TIME__+"\n"));
+    NEED_NO_TOP(QMessageBox::about(this,GS(ABOUT_MESSAGE),GS(AUTHOR)+"：SkyFire\n"+GS(QQ)+"：1513008876\n"+GS(EMAIL)+"：skyfireitdiy@hotmail.com\n"+GS(PROJECT_ADDRESS)+"：http://git.oschina.net/skyfireitdiy/SFClipboard\n"+GS(VERSION)+"："+version+"\n"+GS(BUILD_TIME)+"："+__DATE__+" "+__TIME__+"\n\n\n"+GS(HELP_INFO)));
 }
 
 void MainWidget::on_clear_all(){

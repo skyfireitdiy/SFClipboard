@@ -9,7 +9,7 @@ EXTERN_SF_LAN
 
 QApplication *pApp=0;
 QSettings *pSettings;
-QString version="1.9";
+QString version="2.0";
 MainWidget *pMainWidget=nullptr;
 QString programName="SFClipboard";
 
