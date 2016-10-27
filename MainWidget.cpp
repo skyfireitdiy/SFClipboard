@@ -15,8 +15,9 @@
 #include <thread>
 #include <QEventLoop>
 #include <SFLanguage.h>
+#include <QProcess>
 
-SF_LAN_INIT(lang.ini,chinese)
+SF_LAN_INIT("lang.ini","Chinese")
 
 
 #ifdef _WIN32
@@ -47,28 +48,28 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     QGridLayout *top_layout=new QGridLayout;
     QVBoxLayout *main_layout=new QVBoxLayout;
 
-    enable_watch=new QCheckBox(GS(START_MONITOR),this);
+    enable_watch=new QCheckBox(GS("START_MONITOR"),this);
     top_layout->addWidget(enable_watch,0,0,1,1);
 
 
-    filter_btn=new QPushButton(GS(TYPE_FILTER),this);
+    filter_btn=new QPushButton(GS("TYPE_FILTER"),this);
     top_layout->addWidget(filter_btn,0,1,1,1);
 
 
-    edit_btn=new QPushButton(GS(WATCH_EDIT_DATA),this);
+    edit_btn=new QPushButton(GS("WATCH_EDIT_DATA"),this);
     top_layout->addWidget(edit_btn,0,2,1,1);
 
 
-    delete_record_btn=new QPushButton(GS(DELETE_RECORD),this);
+    delete_record_btn=new QPushButton(GS("DELETE_RECORD"),this);
     top_layout->addWidget(delete_record_btn,0,3,1,1);
 
 
-    enable_auto_save=new QCheckBox(GS(AUTO_SAVE),this);
-    auto_save_file_tip=new QLabel(GS(FILE_PATH),this);
+    enable_auto_save=new QCheckBox(GS("AUTO_SAVE"),this);
+    auto_save_file_tip=new QLabel(GS("FILE_PATH"),this);
     auto_save_file_tip->setAlignment(Qt::AlignCenter);
     auto_save_file_name=new QLineEdit(this);
     auto_save_file_name->setReadOnly(true);
-    auto_save_file_name_btn=new QPushButton(GS(BROWSE),this);
+    auto_save_file_name_btn=new QPushButton(GS("BROWSE"),this);
 
     top_layout->addWidget(enable_auto_save,1,0,1,1);
     top_layout->addWidget(auto_save_file_tip,1,1,1,1);
@@ -76,38 +77,38 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     top_layout->addWidget(auto_save_file_name_btn,1,3,1,1);
 
 
-    record_count_tip=new QLabel(GS(HIS_NUM),this);
+    record_count_tip=new QLabel(GS("HIS_NUM"),this);
     record_count_tip->setAlignment(Qt::AlignCenter);
     record_count_edit=new QLineEdit(this);
-    record_count_set_btn=new QPushButton(GS(SET_NUM),this);
+    record_count_set_btn=new QPushButton(GS("SET_NUM"),this);
     top_layout->addWidget(record_count_tip,2,0,1,2);
     top_layout->addWidget(record_count_edit,2,2,1,1);
     top_layout->addWidget(record_count_set_btn,2,3,1,1);
 
 
-    save_to_file=new QPushButton(GS(SAVE_TO_FILE),this);
-    load_from_file=new QPushButton(GS(LOAD_FROM_FILE),this);
-    export_image=new QPushButton(GS(EXPORT_IMAGE),this);
-    export_urls=new QPushButton(GS(EXPORT_URL),this);
+    save_to_file=new QPushButton(GS("SAVE_TO_FILE"),this);
+    load_from_file=new QPushButton(GS("LOAD_FROM_FILE"),this);
+    export_image=new QPushButton(GS("EXPORT_IMAGE"),this);
+    export_urls=new QPushButton(GS("EXPORT_URL"),this);
     top_layout->addWidget(save_to_file,3,0,1,1);
     top_layout->addWidget(load_from_file,3,1,1,1);
     top_layout->addWidget(export_image,3,2,1,1);
     top_layout->addWidget(export_urls,3,3,1,1);
 
 
-    export_text=new QPushButton(GS(EXPORT_TEXT),this);
-    export_text_one=new QPushButton(GS(EXPORT_TEXT_SINGLE),this);
-    export_html=new QPushButton(GS(EXPORT_HTML),this);
-    export_html_one=new QPushButton(GS(EXPORT_HTML_SINGLE),this);
+    export_text=new QPushButton(GS("EXPORT_TEXT"),this);
+    export_text_one=new QPushButton(GS("EXPORT_TEXT_SINGLE"),this);
+    export_html=new QPushButton(GS("EXPORT_HTML"),this);
+    export_html_one=new QPushButton(GS("EXPORT_HTML_SINGLE"),this);
     top_layout->addWidget(export_text,4,0,1,1);
     top_layout->addWidget(export_text_one,4,1,1,1);
     top_layout->addWidget(export_html,4,2,1,1);
     top_layout->addWidget(export_html_one,4,3,1,1);
 
 
-    about_btn=new QPushButton(GS(ABOUT),this);
-    clear_all=new QPushButton(GS(CLEAR),this);
-    rel_close=new QPushButton(GS(CLOSE));
+    about_btn=new QPushButton(GS("ABOUT"),this);
+    clear_all=new QPushButton(GS("CLEAR"),this);
+    rel_close=new QPushButton(GS("CLOSE"));
     hide_btn=new QPushButton("",this);
     top_layout->addWidget(about_btn,5,0,1,1);
     top_layout->addWidget(clear_all,5,1,1,1);
@@ -129,8 +130,20 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
 
 
     tray_menu=new QMenu(this);
-    tray_menu->addAction(GS(HIDE_SHOW_MAIN_WINDOW),this,SLOT(on_show_hide_widget()));
-    tray_menu->addAction(GS(EXIT),this,SLOT(on_real_exit()));
+    tray_menu->addAction(GS("HIDE_SHOW_MAIN_WINDOW"),this,SLOT(on_show_hide_widget()));
+    QMenu *lan_menu=tray_menu->addMenu("语言");
+    QStringList lan_list=LAN_LIST;
+    QList<QAction*> act_list;
+    for(auto i:lan_list){
+        QAction *act=new QAction(i,this);
+        act_list.push_back(act);
+    }
+    lan_menu->addActions(act_list);
+    connect(lan_menu,SIGNAL(triggered(QAction*)),this,SLOT(on_lang_set(QAction*)));
+
+    tray_menu->addAction(GS("EXIT"),this,SLOT(on_real_exit()));
+
+
     tray_icon=new QSystemTrayIcon(QIcon(":/icon/resource/tray.png"),this);
     tray_icon->show();
     tray_icon->setContextMenu(tray_menu);
@@ -238,13 +251,13 @@ QString MainWidget::get_abstract(const Data &data) const{
     }else if(data.type&HTML){
         return make_short(data.html);
     }else if(data.type&IMAGE){
-        return "<"+GS(IMAGE)+">";
+        return "<"+GS("IMAGE")+">";
     }else if(data.type&URLS){
         return make_short(data.urls.at(0).toString());
     }else if(data.type&COLOR){
-        return "<"+GS(COLOR)+">";
+        return "<"+GS("COLOR")+">";
     }else{
-        return "<"+GS(NO_DATA)+">";
+        return "<"+GS("NO_DATA")+">";
     }
 }
 
@@ -319,7 +332,7 @@ void MainWidget::on_delete_record(){
 
 
 void MainWidget::on_set_auto_save_file(){
-   NEED_NO_TOP(QString file_name=QFileDialog::getSaveFileName(this,GS(AUTO_SAVE),"",GS(SFCLIPBOARD_FILE)+"(*.sfclp)"));
+   NEED_NO_TOP(QString file_name=QFileDialog::getSaveFileName(this,GS("AUTO_SAVE"),"",GS("SFCLIPBOARD_FILE")+"(*.sfclp)"));
     if(file_name.isEmpty())
         return;
     if(file_name.right(6).toLower()!=".sfclp")
@@ -330,7 +343,7 @@ void MainWidget::on_set_auto_save_file(){
 
 
 void MainWidget::on_save_to_file(){
-    NEED_NO_TOP(QString file_name=QFileDialog::getSaveFileName(this,GS(SAVE),"",GS(SFCLIPBOARD_FILE)+"(*.sfclp)"));
+    NEED_NO_TOP(QString file_name=QFileDialog::getSaveFileName(this,GS("SAVE"),"",GS("SFCLIPBOARD_FILE")+"(*.sfclp)"));
     if(file_name.isEmpty())
         return;
     if(file_name.right(6).toLower()!=".sfclp")
@@ -340,7 +353,7 @@ void MainWidget::on_save_to_file(){
 
 
 void MainWidget::on_load_from_file(){
-    NEED_NO_TOP(QString file_name=QFileDialog::getOpenFileName(this,GS(SAVE),"",GS(SFCLIPBOARD_FILE)+"(*.sfclp)"));
+    NEED_NO_TOP(QString file_name=QFileDialog::getOpenFileName(this,GS("SAVE"),"",GS("SFCLIPBOARD_FILE")+"(*.sfclp)"));
     if(file_name.isEmpty())
         return;
     record_count_edit->setText("0");
@@ -350,14 +363,14 @@ void MainWidget::on_load_from_file(){
 
 
 void MainWidget::on_export_image(){
-    NEED_NO_TOP(QString dir_name=QFileDialog::getExistingDirectory(this,GS(EXPORT_DIR),"", QFileDialog::DontResolveSymlinks));
+    NEED_NO_TOP(QString dir_name=QFileDialog::getExistingDirectory(this,GS("EXPORT_DIR"),"", QFileDialog::DontResolveSymlinks));
     if(dir_name.isEmpty())
         return;
     emit export_image_sgn(dir_name);
 }
 
 void MainWidget::on_export_urls(){
-    NEED_NO_TOP( QString file_name=QFileDialog::getSaveFileName(this,GS(SAVE),"",GS(TEXT_FILE)+"(*.txt)"));
+    NEED_NO_TOP( QString file_name=QFileDialog::getSaveFileName(this,GS("SAVE"),"",GS("TEXT_FILE")+"(*.txt)"));
     if(file_name.isEmpty())
         return;
     if(file_name.right(4).toLower()!=".txt")
@@ -367,14 +380,14 @@ void MainWidget::on_export_urls(){
 
 
 void MainWidget::on_export_text(){
-    NEED_NO_TOP(QString dir_name=QFileDialog::getExistingDirectory(this,GS(EXPORT_DIR),"", QFileDialog::DontResolveSymlinks));
+    NEED_NO_TOP(QString dir_name=QFileDialog::getExistingDirectory(this,GS("EXPORT_DIR"),"", QFileDialog::DontResolveSymlinks));
     if(dir_name.isEmpty())
         return;
     emit export_text_sgn(dir_name);
 }
 
 void MainWidget::on_export_text_single(){
-    NEED_NO_TOP(QString file_name=QFileDialog::getSaveFileName(this,GS(SAVE),"",GS(TEXT_FILE)+"(*.txt)"));
+    NEED_NO_TOP(QString file_name=QFileDialog::getSaveFileName(this,GS("SAVE"),"",GS("TEXT_FILE")+"(*.txt)"));
     if(file_name.isEmpty())
         return;
     if(file_name.right(4).toLower()!=".txt")
@@ -384,14 +397,14 @@ void MainWidget::on_export_text_single(){
 
 
 void MainWidget::on_export_html(){
-    NEED_NO_TOP(QString dir_name=QFileDialog::getExistingDirectory(this,GS(EXPORT_DIR),"", QFileDialog::DontResolveSymlinks));
+    NEED_NO_TOP(QString dir_name=QFileDialog::getExistingDirectory(this,GS("EXPORT_DIR"),"", QFileDialog::DontResolveSymlinks));
     if(dir_name.isEmpty())
         return;
     emit export_html_sgn(dir_name);
 }
 
 void MainWidget::on_export_html_single(){
-    NEED_NO_TOP( QString file_name=QFileDialog::getSaveFileName(this,GS(SAVE),"",GS(HTML_FILE)+"(*.html)"));
+    NEED_NO_TOP( QString file_name=QFileDialog::getSaveFileName(this,GS("SAVE"),"",GS("HTML_FILE")+"(*.html)"));
     if(file_name.isEmpty())
         return;
     if(file_name.right(5).toLower()!=".html")
@@ -418,7 +431,7 @@ void MainWidget::closeEvent(QCloseEvent *event){
 }
 
 void MainWidget::on_real_exit(){
-    NEED_NO_TOP(auto ret=QMessageBox::question(this,GS(EXIT),GS(IF_EXIT),QMessageBox::No,QMessageBox::Yes));
+    NEED_NO_TOP(auto ret=QMessageBox::question(this,GS("EXIT"),GS("IF_EXIT"),QMessageBox::No,QMessageBox::Yes));
     if(ret==QMessageBox::No){
         return;
     }
@@ -444,7 +457,7 @@ void MainWidget::resizeEvent(QResizeEvent *){
 }
 
 void MainWidget::on_about(){
-    NEED_NO_TOP(QMessageBox::about(this,GS(ABOUT_MESSAGE),GS(AUTHOR)+"：SkyFire\n"+GS(QQ)+"：1513008876\n"+GS(EMAIL)+"：skyfireitdiy@hotmail.com\n"+GS(PROJECT_ADDRESS)+"：http://git.oschina.net/skyfireitdiy/SFClipboard\n"+GS(VERSION)+"："+version+"\n"+GS(BUILD_TIME)+"："+__DATE__+" "+__TIME__+"\n\n\n"+GS(HELP_INFO)));
+    NEED_NO_TOP(QMessageBox::about(this,GS("ABOUT_MESSAGE"),GS("AUTHOR")+"：SkyFire\n"+GS("QQ")+"：1513008876\n"+GS("EMAIL")+"：skyfireitdiy@hotmail.com\n"+GS("PROJECT_ADDRESS")+"：http://git.oschina.net/skyfireitdiy/SFClipboard\n"+GS("VERSION")+"："+version+"\n"+GS("BUILD_TIME")+"："+__DATE__+" "+__TIME__+"\n\n\n"+GS("HELP_INFO")));
 }
 
 void MainWidget::on_clear_all(){
@@ -466,13 +479,13 @@ void MainWidget::flush_settings(){
             delete auto_hide_widget;
         }
         auto_hide_widget=new AutoHide(this);
-        hide_btn->setText(GS(FIXED));
+        hide_btn->setText(GS("FIXED"));
     }else{
         if(auto_hide_widget){
             delete auto_hide_widget;
             auto_hide_widget=0;
         }
-        hide_btn->setText(GS(FLOAT));
+        hide_btn->setText(GS("FLOAT"));
     }
 }
 
@@ -518,7 +531,7 @@ void MainWidget::on_hot_delete(int num){
 
 void MainWidget::on_need_root(){
     NEED_NO_TOP(
-    QMessageBox::warning(this,GS(WARNING),GS(ROOT_REQUEST),QMessageBox::Ok);
+    QMessageBox::warning(this,GS("WARNING"),GS("ROOT_REQUEST"),QMessageBox::Ok);
     );
 }
 
@@ -527,3 +540,19 @@ void MainWidget::on_need_root(){
 
 
 #undef NEED_NO_TOP
+
+
+void MainWidget::on_lang_set(QAction *act){
+    if(act->text()==GET_CURR_LANG){
+        return;
+    }
+    if(QMessageBox::question(this,GS("WARNING"),GS("CHANGE_LAN_TIP"),QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok){
+        SET_LANG(act->text());
+        pSettings->setValue("lang",act->text());
+        pApp->detach();
+        pSettings->sync();
+        QProcess pro;
+        pro.startDetached(pApp->arguments().at(0));
+        pApp->exit(0);
+    }
+}

@@ -21,3 +21,7 @@ bool SingleApplication::isRunning()
 {
     return _isRunning;
 }
+
+void SingleApplication::detach(){
+    sharedMemory.detach();
+}

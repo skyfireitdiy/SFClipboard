@@ -66,6 +66,7 @@ public slots:
     void on_clear_all();
     void on_auto_hide();
     void on_tray_active(QSystemTrayIcon::ActivationReason reason);
+    void on_lang_set(QAction *act);
 
 
     void on_hot_copy(int num);

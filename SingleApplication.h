@@ -7,6 +7,7 @@ class SingleApplication : public QApplication{
 public:
     SingleApplication(int &argc, char *argv[], const QString uniqueKey);
     bool isRunning();
+    void detach();
 private:
     bool _isRunning;
     QString _uniqueKey;

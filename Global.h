@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QSettings>
 #include <SFLanguage.h>
+#include <SingleApplication.h>
 
 extern int  TEXT ;
 extern int  HTML ;
@@ -10,7 +11,7 @@ extern int  IMAGE ;
 extern int  COLOR ;
 extern int  URLS ;
 
-extern QApplication *pApp;
+extern SingleApplication *pApp;
 extern QSettings *pSettings;
 extern QString version;
 

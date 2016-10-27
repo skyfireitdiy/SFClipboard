@@ -2,18 +2,21 @@
 #include <QGridLayout>
 #include <Global.h>
 
+EXTERN_SF_LAN
+
+
 TypeFilter::TypeFilter(QWidget *parent):QDialog(parent)
 {
-    setWindowTitle("类型筛选");
+    setWindowTitle(GS("TYPE_FILTER"));
     QGridLayout *layout=new QGridLayout(this);
     setLayout(layout);
-    enable_text=new QCheckBox("文本",this);
-    enable_html=new QCheckBox("HTML",this);
-    enable_url=new QCheckBox("URL",this);
-    enable_image=new QCheckBox("图片",this);
-    enable_color=new QCheckBox("颜色",this);
-    ok_btn=new QPushButton("确定",this);
-    cancle_btn=new QPushButton("取消",this);
+    enable_text=new QCheckBox(GS("TEXT"),this);
+    enable_html=new QCheckBox(GS("HTML"),this);
+    enable_url=new QCheckBox(GS("URL"),this);
+    enable_image=new QCheckBox(GS("IMAGE"),this);
+    enable_color=new QCheckBox(GS("COLOR"),this);
+    ok_btn=new QPushButton(GS("SURE"),this);
+    cancle_btn=new QPushButton(GS("CANCEL"),this);
 
     connect(ok_btn,SIGNAL(clicked(bool)),this,SLOT(on_ok_btn_clicked()));
     connect(cancle_btn,SIGNAL(clicked(bool)),this,SLOT(on_cancle_btn_clicked()));
