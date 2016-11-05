@@ -535,18 +535,13 @@ void MainWidget::on_need_root(){
     );
 }
 
-
-
-
-
-#undef NEED_NO_TOP
-
-
 void MainWidget::on_lang_set(QAction *act){
     if(act->text()==GET_CURR_LANG){
         return;
     }
-    if(QMessageBox::question(this,GS("WARNING"),GS("CHANGE_LAN_TIP"),QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok){
+    bool ret=false;
+    NEED_NO_TOP(ret=QMessageBox::question(this,GS("WARNING"),GS("CHANGE_LAN_TIP"),QMessageBox::Ok,QMessageBox::Cancel)==QMessageBox::Ok);
+    if(ret){
         SET_LANG(act->text());
         pSettings->setValue("lang",act->text());
         pApp->detach();
@@ -556,3 +551,10 @@ void MainWidget::on_lang_set(QAction *act){
         pApp->exit(0);
     }
 }
+
+
+
+
+#undef NEED_NO_TOP
+
+
