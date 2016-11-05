@@ -13,6 +13,8 @@ public:
     explicit Data(QObject *parent = 0);
     Data(const Data& other, QObject *parent=0);
     const Data& operator =(const Data& other);
+    bool operator ==(const Data& other)const;
+    bool operator !=(const Data& other)const;
     int type;
     QString text;
     QString html;

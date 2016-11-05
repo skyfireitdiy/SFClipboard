@@ -38,7 +38,8 @@ DISTFILES += \
     install/licence.txt \
     windows.bat \
     install/icon.ico \
-    bin/lang.ini
+    bin/lang.ini \
+    bin/SFClipboard.exe
 
 RESOURCES += \
     resource.qrc

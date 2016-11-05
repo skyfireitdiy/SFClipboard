@@ -62,7 +62,11 @@ void ClipBoardContent::on_clip_data_changed(){
     if(tempData.type==0){
         return ;
     }
-    data.push_front(tempData);
+    static Data oldData;
+    if(oldData!=tempData){
+        data.push_front(tempData);
+        oldData=tempData;
+    }
     if(max_record_count>0&&data.size()>max_record_count)
         data.pop_back();
     if(is_auto_save){

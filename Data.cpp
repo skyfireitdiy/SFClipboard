@@ -34,3 +34,17 @@ void Data::clear(){
     text="";
     urls.clear();
 }
+
+
+bool Data::operator ==(const Data & other)const{
+    return this->type==other.type&&
+            this->image==other.image&&
+            this->text==other.text&&
+            this->html==other.text&&
+            this->color==other.color&&
+            this->urls==other.urls;
+}
+
+bool Data::operator !=(const Data & other)const{
+    return !operator ==(other);
+}
