@@ -4,6 +4,10 @@
 #include <QSettings>
 #include <SFLanguage.h>
 #include <SingleApplication.h>
+#ifdef __WIN32
+#include <windows.h>
+
+#endif
 
 extern int  TEXT ;
 extern int  HTML ;
@@ -15,6 +19,10 @@ extern SingleApplication *pApp;
 extern QSettings *pSettings;
 extern QString version;
 
+#ifdef __WIN32
+BOOL IsRunasAdmin();
+
+#endif
 
 
 

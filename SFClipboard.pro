@@ -13,6 +13,7 @@ HEADERS += \
     SFLanguage.h \
     LinuxHook.h
 
+
 SOURCES += \
     MainWidget.cpp \
     Main.cpp \
@@ -24,7 +25,13 @@ SOURCES += \
     WinHook.cpp \
     SingleApplication.cpp \
     SFLanguage.cpp \
-    LinuxHook.cpp
+    LinuxHook.cpp \
+    global.cpp
+
+win32{
+HEADERS +=SFReg.h
+SOURCES += SFReg.cpp
+}
 
 CONFIG+= c++11
 
