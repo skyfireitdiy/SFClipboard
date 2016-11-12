@@ -17,6 +17,7 @@ public slots:
     void on_check_if_hide();
     void on_show_widget();
     void on_hide_widget();
+    void on_in_out();
 private:
     QWidget *parent_widget;
     QTimer *start_hide_timer;

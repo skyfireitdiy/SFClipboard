@@ -12,6 +12,7 @@ signals:
     void clear();
     void exit_hook();
     void need_root();
+    void in_out();
 public:
     LinuxKeyHook(QObject *parent=0);
     void start();

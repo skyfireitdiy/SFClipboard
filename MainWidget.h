@@ -13,6 +13,9 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 #include <AutoHide.h>
+#ifdef __WIN32
+#include <windows.h>
+#endif
 
 
 class MainWidget : public QWidget
@@ -40,6 +43,7 @@ signals:
     void export_html_one_sgn(QString);
     void clear_all_sgn();
     void rect_changed();
+    void frame_in_out_sgn();
 
 
 public slots:
@@ -124,6 +128,13 @@ private:
     void closeEvent(QCloseEvent *event);
     void resizeEvent(QResizeEvent *);
     void flush_settings();
+
+
+#ifdef __WIN32
+    friend LRESULT CALLBACK keyProc(int,WPARAM wParam,LPARAM lParam);
+#endif
+
+
 };
 
 #endif // MAINWIDGET_H

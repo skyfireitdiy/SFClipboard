@@ -15,6 +15,7 @@ AutoHide::AutoHide(QWidget *parent) : QObject(parent),parent_widget(parent),mous
     parent_widget->installEventFilter(this);
     parent_widget->setWindowFlags(parent_widget->windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint|Qt::Tool);
     connect(parent_widget,SIGNAL(rect_changed()),this,SLOT(on_check_if_hide()));
+    connect(parent_widget,SIGNAL(frame_in_out_sgn()),this,SLOT(on_in_out()));
 }
 
 
@@ -127,4 +128,16 @@ bool AutoHide::eventFilter(QObject *watched, QEvent *event){
         }
     }
     return QObject::eventFilter(watched,event);
+}
+
+
+void AutoHide::on_in_out(){
+    static bool in=false;
+    if(in){
+        in=false;
+        hide_timer->start(10);
+    }else{
+        in=true;
+        show_timer->start(5);
+    }
 }

@@ -39,6 +39,7 @@ void setHook(){
         QObject::connect(&hook,SIGNAL(hot_delete(int)),pMainWidget,SLOT(on_hot_delete(int)));
         QObject::connect(&hook,SIGNAL(clear()),pMainWidget,SLOT(on_clear_all()));
         QObject::connect(&hook,SIGNAL(need_root()),pMainWidget,SLOT(on_need_root()));
+        QOnject::connect(&hook,SIGNAL(in_out()),pMainWidget,SIGNAL(frame_in_out_sgn()));
         QEventLoop event;
         QObject::connect(&hook,SIGNAL(exit_hook()),&event,SLOT(quit()));
         hook.start();
@@ -158,6 +159,9 @@ void LinuxKeyHook::start(){
                     }else if(t.code==KEY_C){
                         if(alt)
                             emit clear();
+                    }else if(t.code==KEY_V){
+                        if(alt)
+                            emit in_out();
                     }
                 }else if(t.value ==0){
                     if(t.code==KEY_LEFTCTRL){

@@ -13,7 +13,7 @@ EXTERN_SF_LAN
 
 SingleApplication *pApp=0;
 QSettings *pSettings;
-QString version="2.4";
+QString version="2.5";
 MainWidget *pMainWidget=nullptr;
 QString programName="SFClipboard";
 
@@ -21,6 +21,7 @@ int main(int argc,char ** argv){
     SingleApplication app(argc,argv,programName);
     pSettings=new QSettings("sfclip.ini",QSettings::IniFormat,pApp);
     SET_LANG(pSettings->value("lang").toString());
+
 #ifdef __WIN32
     if(!IsRunasAdmin()){
         app.detach();
@@ -37,6 +38,7 @@ int main(int argc,char ** argv){
         return 0;
     }
 #endif
+
     if(app.isRunning()){
         QMessageBox::information(nullptr,GS("MESSAGE"),GS("STILL_RUN"),QMessageBox::Ok);
         return 0;

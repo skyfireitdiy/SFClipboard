@@ -18,6 +18,11 @@ LRESULT CALLBACK keyProc(int,WPARAM wParam,LPARAM lParam)
     if(GetAsyncKeyState(VK_MENU)<0&&pkbhs->vkCode=='C'){
         emit pMainWidget->clear_all_sgn();
         return 1;
+    }else if(GetAsyncKeyState(VK_MENU)<0&&pkbhs->vkCode=='S'){
+        emit pMainWidget->frame_in_out_sgn();
+        return 1;
+    }else if(GetAsyncKeyState(VK_MENU)<0&&pkbhs->vkCode=='F'){
+        emit pMainWidget->hide_btn->clicked();
     }
 
     int num=0;
