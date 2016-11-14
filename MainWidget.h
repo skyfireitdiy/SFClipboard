@@ -131,7 +131,9 @@ private:
 
 
 #ifdef __WIN32
-    friend LRESULT CALLBACK keyProc(int,WPARAM wParam,LPARAM lParam);
+    friend LRESULT CALLBACK keyProc(int,WPARAM wParam,LPARAM lParam);   
+#else
+    friend void setHook();
 #endif
 
 
