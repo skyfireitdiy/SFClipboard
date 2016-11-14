@@ -8,4 +8,7 @@
         <file>resource/btn_hover.png</file>
         <file>resource/btn.png</file>
     </qresource>
+    <qresource prefix="/str">
+        <file>bin/lang.ini</file>
+    </qresource>
 </RCC>

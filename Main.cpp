@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <SingleApplication.h>
 #include <QDebug>
+#include <QFile>
 #ifdef __WIN32
 #include <SFReg.h>
 #endif
@@ -13,12 +14,18 @@ EXTERN_SF_LAN
 
 SingleApplication *pApp=0;
 QSettings *pSettings;
-QString version="2.5";
+QString version="2.6";
 MainWidget *pMainWidget=nullptr;
 QString programName="SFClipboard";
 
 int main(int argc,char ** argv){
     SingleApplication app(argc,argv,programName);
+    QFile lang_file("lang.ini");
+    qDebug()<<lang_file.exists();
+    if(!lang_file.exists()){
+        QFile temp_lang_file(":/str/bin/lang.ini");
+        temp_lang_file.copy("lang.ini");
+    }
     pSettings=new QSettings("sfclip.ini",QSettings::IniFormat,pApp);
     SET_LANG(pSettings->value("lang").toString());
 
