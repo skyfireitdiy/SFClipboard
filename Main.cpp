@@ -6,6 +6,7 @@
 #include <SingleApplication.h>
 #include <QDebug>
 #include <QFile>
+#include <QFileInfo>
 #ifdef __WIN32
 #include <SFReg.h>
 #endif
@@ -14,14 +15,21 @@ EXTERN_SF_LAN
 
 SingleApplication *pApp=0;
 QSettings *pSettings;
-QString version="2.6";
+QString version="2.7";
 MainWidget *pMainWidget=nullptr;
 QString programName="SFClipboard";
 
 int main(int argc,char ** argv){
     SingleApplication app(argc,argv,programName);
+
+#ifdef __WIN32
+    char file_full_path[256]{0};
+    GetModuleFileNameA(0,file_full_path,256);
+    QFileInfo curr_file(file_full_path);
+    SetCurrentDirectoryA(curr_file.path().toLocal8Bit());
+#endif
+
     QFile lang_file("lang.ini");
-    qDebug()<<lang_file.exists();
     if(!lang_file.exists()){
         QFile temp_lang_file(":/str/bin/lang.ini");
         temp_lang_file.copy("lang.ini");
