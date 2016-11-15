@@ -76,6 +76,7 @@ public slots:
     void on_hot_copy(int num);
     void on_hot_delete(int num);
     void on_need_root();
+    void on_pos_chnaged(QPoint pos);
 
 private:
     ClipBoardContent* pClipContent;
@@ -128,8 +129,6 @@ private:
     void closeEvent(QCloseEvent *event);
     void resizeEvent(QResizeEvent *);
     void flush_settings();
-
-
 #ifdef __WIN32
     friend LRESULT CALLBACK keyProc(int,WPARAM wParam,LPARAM lParam);   
 #else

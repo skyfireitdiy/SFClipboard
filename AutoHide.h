@@ -18,6 +18,8 @@ public slots:
     void on_show_widget();
     void on_hide_widget();
     void on_in_out();
+signals:
+    void pos_changed(QPoint);
 private:
     QWidget *parent_widget;
     QTimer *start_hide_timer;

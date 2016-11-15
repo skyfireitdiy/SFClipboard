@@ -5,6 +5,9 @@
 #include <QApplication>
 #include <QDebug>
 
+static const int hide_speed=10;
+static const int show_speed=30;
+
 AutoHide::AutoHide(QWidget *parent) : QObject(parent),parent_widget(parent),mouse_press(false)
 {
     hide_timer=new QTimer(this);
@@ -14,8 +17,6 @@ AutoHide::AutoHide(QWidget *parent) : QObject(parent),parent_widget(parent),mous
     parent_widget->setMouseTracking(true);
     parent_widget->installEventFilter(this);
     parent_widget->setWindowFlags(parent_widget->windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint|Qt::Tool);
-    connect(parent_widget,SIGNAL(rect_changed()),this,SLOT(on_check_if_hide()));
-    connect(parent_widget,SIGNAL(frame_in_out_sgn()),this,SLOT(on_in_out()));
 }
 
 
@@ -44,39 +45,39 @@ void AutoHide::on_hide_widget(){
     QRect desktop_rect=QApplication::desktop()->rect();
     QRect widget_rect=parent_widget->geometry();
     if(desktop_rect.left()>=widget_rect.left()){
-        if(desktop_rect.left()<widget_rect.right()-10){
-            parent_widget->move(parent_widget->x()-10,parent_widget->y());
+        if(desktop_rect.left()<widget_rect.right()-hide_speed){
+            parent_widget->move(parent_widget->x()-hide_speed,parent_widget->y());
         }else{
             hide_timer->stop();
-            parent_widget->move(-parent_widget->width()+5,parent_widget->y());
+            parent_widget->move(-parent_widget->width()+hide_speed/2,parent_widget->y());
         }
         return;
     }
     if(desktop_rect.right()<=widget_rect.right()){
-        if(desktop_rect.right()>widget_rect.left()+10){
-            parent_widget->move(parent_widget->x()+10,parent_widget->y());
+        if(desktop_rect.right()>widget_rect.left()+hide_speed){
+            parent_widget->move(parent_widget->x()+hide_speed,parent_widget->y());
         }else{
             hide_timer->stop();
-            parent_widget->move(desktop_rect.right()-5,parent_widget->y());
+            parent_widget->move(desktop_rect.right()-hide_speed/2,parent_widget->y());
         }
         return;
     }
     if(desktop_rect.top()>=widget_rect.top()){
-        if(desktop_rect.top()<widget_rect.bottom()-10){
-            parent_widget->move(parent_widget->x(),parent_widget->y()-10);
+        if(desktop_rect.top()<widget_rect.bottom()-hide_speed){
+            parent_widget->move(parent_widget->x(),parent_widget->y()-hide_speed);
 
         }else{
             hide_timer->stop();
-            parent_widget->move(parent_widget->x(),-parent_widget->height()+5);
+            parent_widget->move(parent_widget->x(),-parent_widget->height()+hide_speed/2);
         }
         return;
     }
     if(desktop_rect.bottom()<=widget_rect.bottom()){
-        if(desktop_rect.bottom()>widget_rect.top()+10){
-            parent_widget->move(parent_widget->x(),parent_widget->y()+10);
+        if(desktop_rect.bottom()>widget_rect.top()+hide_speed){
+            parent_widget->move(parent_widget->x(),parent_widget->y()+hide_speed);
         }else{
             hide_timer->stop();
-            parent_widget->move(parent_widget->x(),desktop_rect.bottom()-5);
+            parent_widget->move(parent_widget->x(),desktop_rect.bottom()-hide_speed/2);
         }
         return;
     }
@@ -87,14 +88,14 @@ void AutoHide::on_hide_widget(){
 void AutoHide::on_show_widget(){
     QRect desktop_rect=QApplication::desktop()->rect();
     QRect widget_rect=parent_widget->geometry();
-    if(desktop_rect.left()>widget_rect.left()+10){
-        parent_widget->move(parent_widget->x()+10,parent_widget->y());
-    }else if(desktop_rect.right()<widget_rect.right()-10){
-        parent_widget->move(parent_widget->x()-10,parent_widget->y());
-    }else if(desktop_rect.top()>widget_rect.top()+10){
-        parent_widget->move(parent_widget->x(),parent_widget->y()+10);
-    }else if(desktop_rect.bottom()<widget_rect.bottom()-10){
-        parent_widget->move(parent_widget->x(),parent_widget->y()-10);
+    if(desktop_rect.left()>widget_rect.left()+show_speed){
+        parent_widget->move(parent_widget->x()+show_speed,parent_widget->y());
+    }else if(desktop_rect.right()<widget_rect.right()-show_speed){
+        parent_widget->move(parent_widget->x()-show_speed,parent_widget->y());
+    }else if(desktop_rect.top()>widget_rect.top()+show_speed){
+        parent_widget->move(parent_widget->x(),parent_widget->y()+show_speed);
+    }else if(desktop_rect.bottom()<widget_rect.bottom()-show_speed){
+        parent_widget->move(parent_widget->x(),parent_widget->y()-show_speed);
     }else{
         show_timer->stop();
     }
@@ -124,6 +125,7 @@ bool AutoHide::eventFilter(QObject *watched, QEvent *event){
             QMouseEvent *m=(QMouseEvent*)event;
             if(m->button()==Qt::LeftButton){
                 mouse_press=false;
+                emit pos_changed(old_pos);
             }
         }
     }

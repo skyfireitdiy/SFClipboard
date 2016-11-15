@@ -280,6 +280,7 @@ void MainWidget::write_setting(){
     pSettings->setValue("max_record_count",record_count_edit->text().toInt());
     pSettings->setValue("auto_hide",auto_hide);
     pSettings->setValue("pos",pos());
+    pSettings->sync();
 }
 
 
@@ -479,6 +480,9 @@ void MainWidget::flush_settings(){
             delete auto_hide_widget;
         }
         auto_hide_widget=new AutoHide(this);
+        connect(this,SIGNAL(rect_changed()),auto_hide_widget,SLOT(on_check_if_hide()));
+        connect(this,SIGNAL(frame_in_out_sgn()),auto_hide_widget,SLOT(on_in_out()));
+        connect(auto_hide_widget,SIGNAL(pos_changed(QPoint)),this,SLOT(on_pos_chnaged(QPoint)));
         hide_btn->setText(GS("FIXED"));
     }else{
         if(auto_hide_widget){
@@ -550,6 +554,14 @@ void MainWidget::on_lang_set(QAction *act){
         pro.startDetached(pApp->arguments().at(0));
         pApp->exit(0);
     }
+}
+
+
+
+
+void MainWidget::on_pos_chnaged(QPoint pos){
+    pSettings->setValue("pos",pos);
+    pSettings->sync();
 }
 
 
