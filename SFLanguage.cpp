@@ -18,6 +18,7 @@ QString SFLanguage::get_string(QString key, QString language){
             return language_settings->value(language+"/"+key).toString();
         emit string_not_found(language+"/"+key);
     }
+    return "";
 }
 
 QStringList SFLanguage::get_lang_list(){
