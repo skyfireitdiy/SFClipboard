@@ -15,7 +15,7 @@ EXTERN_SF_LAN
 
 SingleApplication *pApp=0;
 QSettings *pSettings;
-QString version="2.8";
+QString version="2.9";
 MainWidget *pMainWidget=nullptr;
 QString programName="SFClipboard";
 
@@ -33,6 +33,7 @@ int main(int argc,char ** argv){
     if(!lang_file.exists()){
         QFile temp_lang_file(":/str/bin/lang.ini");
         temp_lang_file.copy("lang.ini");
+        __lan_st=new SFLanguage("lang.ini","Chinese");
     }
     pSettings=new QSettings("sfclip.ini",QSettings::IniFormat,pApp);
     SET_LANG(pSettings->value("lang").toString());

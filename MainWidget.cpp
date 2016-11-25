@@ -17,8 +17,8 @@
 #include <SFLanguage.h>
 #include <QProcess>
 
-SF_LAN_INIT("lang.ini","Chinese")
 
+SFLanguage *__lan_st{nullptr};
 
 #ifdef _WIN32
 #include <windows.h>
