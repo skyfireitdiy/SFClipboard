@@ -13,10 +13,13 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 #include <AutoHide.h>
+#include <SingleApplication.h>
 #ifdef __WIN32
 #include <windows.h>
 #endif
 
+extern SingleApplication *pApp;
+extern QString programName;
 
 class MainWidget : public QWidget
 {
@@ -72,6 +75,9 @@ public slots:
     void on_tray_active(QSystemTrayIcon::ActivationReason reason);
     void on_lang_set(QAction *act);
 
+    void on_auto_run();
+
+
 
     void on_hot_copy(int num);
     void on_hot_delete(int num);
@@ -121,6 +127,10 @@ private:
     QSystemTrayIcon *tray_icon;
 
     QMenu *tray_menu;
+
+#ifdef __WIN32
+    QAction *auto_run;
+#endif
 
     QString get_abstract(const Data &data)const;
     void read_setting();

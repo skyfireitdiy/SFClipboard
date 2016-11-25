@@ -16,9 +16,11 @@
 #include <QEventLoop>
 #include <SFLanguage.h>
 #include <QProcess>
+#include <SFReg.h>
+#include <QDesktopWidget>
 
 
-SFLanguage *__lan_st{nullptr};
+SF_LAN_INIT(":/str/bin/lang.ini","Chinese")
 
 #ifdef _WIN32
 #include <windows.h>
@@ -140,6 +142,13 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     }
     lan_menu->addActions(act_list);
     connect(lan_menu,SIGNAL(triggered(QAction*)),this,SLOT(on_lang_set(QAction*)));
+
+#ifdef __WIN32
+    auto_run=tray_menu->addAction(GS("AUTO_RUN"),this,SLOT(on_auto_run()));
+    auto_run->setCheckable(true);
+    auto_run->setChecked(pSettings->value("auto_run",false).toBool());
+    on_auto_run();
+#endif
 
     tray_menu->addAction(GS("EXIT"),this,SLOT(on_real_exit()));
 
@@ -292,7 +301,13 @@ void MainWidget::read_setting(){
     auto_save_file_name->setText(pSettings->value("auto_save_file","").toString());
     record_count_edit->setText(QString::number(pSettings->value("max_record_count",0).toInt()));
     auto_hide=pSettings->value("auto_hide",true).toBool();
-    move(pSettings->value("pos",QPoint(0,0)).toPoint());
+    QPoint p=pSettings->value("pos",QPoint(0,0)).toPoint();
+    QDesktopWidget *desktop= pApp->desktop();
+    if(p.x()>desktop->width())
+        p.setX(desktop->width()-50);
+    if(p.y()>desktop->height())
+        p.setY(desktop->height()-50);
+    move(p);
     flush_settings();
 }
 
@@ -478,6 +493,7 @@ void MainWidget::flush_settings(){
     if(auto_hide){
         if(auto_hide_widget){
             delete auto_hide_widget;
+            auto_hide_widget=nullptr;
         }
         auto_hide_widget=new AutoHide(this);
         connect(this,SIGNAL(rect_changed()),auto_hide_widget,SLOT(on_check_if_hide()));
@@ -487,7 +503,7 @@ void MainWidget::flush_settings(){
     }else{
         if(auto_hide_widget){
             delete auto_hide_widget;
-            auto_hide_widget=0;
+            auto_hide_widget=nullptr;
         }
         hide_btn->setText(GS("FLOAT"));
     }
@@ -563,6 +579,19 @@ void MainWidget::on_pos_chnaged(QPoint pos){
     pSettings->setValue("pos",pos);
     pSettings->sync();
 }
+
+
+void MainWidget::on_auto_run(){
+#ifdef __WIN32
+    if(auto_run->isChecked()){
+        SFReg::add_win32_auto_run_once(programName,pApp->arguments()[0]);
+    }else{
+        SFReg::delete_win32_auto_run_once(programName);
+    }
+    pSettings->setValue("auto_run",auto_run->isChecked());
+#endif
+}
+
 
 
 
