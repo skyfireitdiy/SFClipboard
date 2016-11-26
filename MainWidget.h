@@ -76,6 +76,7 @@ public slots:
     void on_lang_set(QAction *act);
 
     void on_auto_run();
+    void on_auto_load_auto_save_file();
 
 
 
@@ -131,6 +132,8 @@ private:
 #ifdef __WIN32
     QAction *auto_run;
 #endif
+    QAction *auto_load_auto_save_file_act;
+    QAction *float_fix_act;
 
     QString get_abstract(const Data &data)const;
     void read_setting();

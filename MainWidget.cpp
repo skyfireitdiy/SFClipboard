@@ -146,9 +146,12 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
 #ifdef __WIN32
     auto_run=tray_menu->addAction(GS("AUTO_RUN"),this,SLOT(on_auto_run()));
     auto_run->setCheckable(true);
-    auto_run->setChecked(pSettings->value("auto_run",false).toBool());
-    on_auto_run();
 #endif
+
+    auto_load_auto_save_file_act=tray_menu->addAction(GS("AUTO_LOAD_AUTO_SAVE_FILE"),this,SLOT(on_auto_load_auto_save_file()));
+    auto_load_auto_save_file_act->setCheckable(true);
+
+    float_fix_act=tray_menu->addAction("",this,SLOT(on_auto_hide()));
 
     tray_menu->addAction(GS("EXIT"),this,SLOT(on_real_exit()));
 
@@ -227,6 +230,13 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     connect(pView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_edit_btn_clicked()));
     connect(tray_icon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(on_tray_active(QSystemTrayIcon::ActivationReason)));
 
+
+
+    if(auto_load_auto_save_file_act->isChecked()){
+        emit load_from_file_sgn(auto_save_file_name->text());
+    }
+
+
     setHook();
 }
 
@@ -289,6 +299,8 @@ void MainWidget::write_setting(){
     pSettings->setValue("max_record_count",record_count_edit->text().toInt());
     pSettings->setValue("auto_hide",auto_hide);
     pSettings->setValue("pos",pos());
+    pSettings->setValue("auto_load_auto_save_file",auto_load_auto_save_file_act->isChecked());
+    pSettings->setValue("auto_run",auto_run->isChecked());
     pSettings->sync();
 }
 
@@ -308,6 +320,8 @@ void MainWidget::read_setting(){
     if(p.y()>desktop->height())
         p.setY(desktop->height()-50);
     move(p);
+    auto_run->setChecked(pSettings->value("auto_run",false).toBool());
+    auto_load_auto_save_file_act->setChecked(pSettings->value("auto_load_auto_save_file").toBool());
     flush_settings();
 }
 
@@ -500,12 +514,14 @@ void MainWidget::flush_settings(){
         connect(this,SIGNAL(frame_in_out_sgn()),auto_hide_widget,SLOT(on_in_out()));
         connect(auto_hide_widget,SIGNAL(pos_changed(QPoint)),this,SLOT(on_pos_chnaged(QPoint)));
         hide_btn->setText(GS("FIXED"));
+        float_fix_act->setText(GS("FIXED"));
     }else{
         if(auto_hide_widget){
             delete auto_hide_widget;
             auto_hide_widget=nullptr;
         }
         hide_btn->setText(GS("FLOAT"));
+        float_fix_act->setText(GS("FLOAT"));
     }
 }
 
@@ -588,11 +604,13 @@ void MainWidget::on_auto_run(){
     }else{
         SFReg::delete_win32_auto_run_once(programName);
     }
-    pSettings->setValue("auto_run",auto_run->isChecked());
+    write_setting();
 #endif
 }
 
-
+void MainWidget::on_auto_load_auto_save_file(){
+    write_setting();
+}
 
 
 
