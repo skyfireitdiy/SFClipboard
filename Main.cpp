@@ -29,7 +29,15 @@ int main(int argc,char ** argv){
     GetModuleFileNameA(0,file_full_path,256);
     QFileInfo curr_file(file_full_path);
     SetCurrentDirectoryA(curr_file.path().toLocal8Bit());
+#else
+    QFile lang_file("lang.ini");
+    if(!lang_file.exists()){
+        QFile lang_rc_file(":/str/bin/lang.ini");
+        lang_rc_file.copy("lang.ini");
+    }
+    __lan_st=new SFLanguage("lang.ini","Chinese");
 #endif
+
     pSettings=new QSettings("sfclip.ini",QSettings::IniFormat,pApp);
     SET_LANG(pSettings->value("lang").toString());
 

@@ -19,8 +19,11 @@
 #include <SFReg.h>
 #include <QDesktopWidget>
 
-
+#ifdef __WIN32
 SF_LAN_INIT(":/str/bin/lang.ini","Chinese")
+#else
+SFLanguage *__lan_st=nullptr;
+#endif
 
 #ifdef _WIN32
 #include <windows.h>
