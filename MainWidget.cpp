@@ -300,7 +300,9 @@ void MainWidget::write_setting(){
     pSettings->setValue("auto_hide",auto_hide);
     pSettings->setValue("pos",pos());
     pSettings->setValue("auto_load_auto_save_file",auto_load_auto_save_file_act->isChecked());
+#ifdef __WIN32
     pSettings->setValue("auto_run",auto_run->isChecked());
+#endif
     pSettings->sync();
 }
 
@@ -320,7 +322,9 @@ void MainWidget::read_setting(){
     if(p.y()>desktop->height())
         p.setY(desktop->height()-50);
     move(p);
+#ifdef __WIN32
     auto_run->setChecked(pSettings->value("auto_run",false).toBool());
+#endif
     auto_load_auto_save_file_act->setChecked(pSettings->value("auto_load_auto_save_file").toBool());
     flush_settings();
 }
