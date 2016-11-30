@@ -11,7 +11,7 @@ Data::Data(const Data &other,QObject *parent):
 {
 }
 
-Data::Data(QObject *parent):QObject(parent),type(0){
+Data::Data(QObject *parent):QObject(parent){
 
 }
 
@@ -40,7 +40,7 @@ bool Data::operator ==(const Data & other)const{
     return this->type==other.type&&
             this->image==other.image&&
             this->text==other.text&&
-            this->html==other.text&&
+            this->html==other.html&&
             this->color==other.color&&
             this->urls==other.urls;
 }

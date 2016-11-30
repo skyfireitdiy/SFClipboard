@@ -37,9 +37,9 @@ SFLanguage *__lan_st=nullptr;
 #endif
 
 static const int list_margin=30;
-static const int menu_height=300;
-static const int window_width=440;
-static const int max_height=400;
+static const int menu_height=200;
+static const int window_width=340;
+static const int max_height=300;
 
 #define NEED_NO_TOP(x) setWindowFlags(windowFlags()&~Qt::WindowStaysOnTopHint);x;setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint);resizeEvent(0);show();
 
@@ -53,13 +53,12 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     QGridLayout *top_layout=new QGridLayout;
     QVBoxLayout *main_layout=new QVBoxLayout;
 
+
     enable_watch=new QCheckBox(GS("START_MONITOR"),this);
     top_layout->addWidget(enable_watch,0,0,1,1);
 
-
-    filter_btn=new QPushButton(GS("TYPE_FILTER"),this);
-    top_layout->addWidget(filter_btn,0,1,1,1);
-
+    clear_all=new QPushButton(GS("CLEAR"),this);
+    top_layout->addWidget(clear_all,0,1,1,1);
 
     edit_btn=new QPushButton(GS("WATCH_EDIT_DATA"),this);
     top_layout->addWidget(edit_btn,0,2,1,1);
@@ -90,35 +89,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     top_layout->addWidget(record_count_edit,2,2,1,1);
     top_layout->addWidget(record_count_set_btn,2,3,1,1);
 
-
-    save_to_file=new QPushButton(GS("SAVE_TO_FILE"),this);
-    load_from_file=new QPushButton(GS("LOAD_FROM_FILE"),this);
-    export_image=new QPushButton(GS("EXPORT_IMAGE"),this);
-    export_urls=new QPushButton(GS("EXPORT_URL"),this);
-    top_layout->addWidget(save_to_file,3,0,1,1);
-    top_layout->addWidget(load_from_file,3,1,1,1);
-    top_layout->addWidget(export_image,3,2,1,1);
-    top_layout->addWidget(export_urls,3,3,1,1);
-
-
-    export_text=new QPushButton(GS("EXPORT_TEXT"),this);
-    export_text_one=new QPushButton(GS("EXPORT_TEXT_SINGLE"),this);
-    export_html=new QPushButton(GS("EXPORT_HTML"),this);
-    export_html_one=new QPushButton(GS("EXPORT_HTML_SINGLE"),this);
-    top_layout->addWidget(export_text,4,0,1,1);
-    top_layout->addWidget(export_text_one,4,1,1,1);
-    top_layout->addWidget(export_html,4,2,1,1);
-    top_layout->addWidget(export_html_one,4,3,1,1);
-
-
     about_btn=new QPushButton(GS("ABOUT"),this);
-    clear_all=new QPushButton(GS("CLEAR"),this);
-    rel_close=new QPushButton(GS("CLOSE"));
+
     hide_btn=new QPushButton("",this);
-    top_layout->addWidget(about_btn,5,0,1,1);
-    top_layout->addWidget(clear_all,5,1,1,1);
-    top_layout->addWidget(rel_close,5,2,1,1);
-    top_layout->addWidget(hide_btn,5,3,1,1);
+    top_layout->addWidget(about_btn,3,0,1,1);
+    top_layout->addWidget(hide_btn,3,3,1,1);
 
 
     main_layout->addWidget(pView);
@@ -131,11 +106,19 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     //setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint|Qt::Tool);
 
-    setContentsMargins(50,20,50,20);
+    setContentsMargins(10,10,10,10);
 
 
     tray_menu=new QMenu(this);
-    tray_menu->addAction(GS("HIDE_SHOW_MAIN_WINDOW"),this,SLOT(on_show_hide_widget()));
+
+#ifdef __WIN32
+    auto_run=tray_menu->addAction(GS("AUTO_RUN"),this,SLOT(on_auto_run()));
+    auto_run->setCheckable(true);
+#endif
+
+    auto_load_auto_save_file_act=tray_menu->addAction(GS("AUTO_LOAD_AUTO_SAVE_FILE"),this,SLOT(on_auto_load_auto_save_file()));
+    auto_load_auto_save_file_act->setCheckable(true);
+
     QMenu *lan_menu=tray_menu->addMenu("语言");
     QStringList lan_list=LAN_LIST;
     QList<QAction*> act_list;
@@ -146,13 +129,19 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     lan_menu->addActions(act_list);
     connect(lan_menu,SIGNAL(triggered(QAction*)),this,SLOT(on_lang_set(QAction*)));
 
-#ifdef __WIN32
-    auto_run=tray_menu->addAction(GS("AUTO_RUN"),this,SLOT(on_auto_run()));
-    auto_run->setCheckable(true);
-#endif
 
-    auto_load_auto_save_file_act=tray_menu->addAction(GS("AUTO_LOAD_AUTO_SAVE_FILE"),this,SLOT(on_auto_load_auto_save_file()));
-    auto_load_auto_save_file_act->setCheckable(true);
+    tray_menu->addAction(GS("HIDE_SHOW_MAIN_WINDOW"),this,SLOT(on_show_hide_widget()));
+    filter_act=tray_menu->addAction(GS("TYPE_FILTER"),this,SLOT(on_filter_act_clicked()));
+    save_to_file=tray_menu->addAction(GS("SAVE_TO_FILE"),this,SLOT(on_save_to_file()));
+    load_from_file =tray_menu->addAction(GS("LOAD_FROM_FILE"),this,SLOT(on_load_from_file()));
+    export_image=tray_menu->addAction(GS("EXPORT_IMAGE"),this,SLOT(on_export_image()));
+    export_text=tray_menu->addAction(GS("EXPORT_TEXT"),this,SLOT(on_export_text()));
+    export_html=tray_menu->addAction(GS("EXPORT_HTML"),this,SLOT(on_export_html()));
+    export_urls=tray_menu->addAction(GS("EXPORT_URL"),this,SLOT(on_export_urls()));
+    export_text_one=tray_menu->addAction(GS("EXPORT_TEXT_SINGLE"),this,SLOT(on_export_text_single()));
+    export_html=tray_menu->addAction(GS("EXPORT_HTML_SINGLE"),this,SLOT(on_export_html_single()));
+
+
 
     float_fix_act=tray_menu->addAction("",this,SLOT(on_auto_hide()));
 
@@ -199,7 +188,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     connect(this,SIGNAL(delete_record(int)),pClipContent,SLOT(on_delete_record(int)));
     connect(this,SIGNAL(save_to_file_sgn(QString)),pClipContent,SLOT(on_save_to_file(QString)));
     connect(this,SIGNAL(load_from_file_sgn(QString)),pClipContent,SLOT(on_load_from_file(QString)));
-    connect(this,SIGNAL(export_image_sgn(QString)),pClipContent,SLOT(on_export_image(QString)));
     connect(this,SIGNAL(export_urls_sgn(QString)),pClipContent,SLOT(on_export_urls(QString)));
     connect(this,SIGNAL(export_text_one_sgn(QString)),pClipContent,SLOT(on_export_text_single(QString)));
     connect(this,SIGNAL(export_text_sgn(QString)),pClipContent,SLOT(on_export_text(QString)));
@@ -211,27 +199,18 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
 
     connect(pView,SIGNAL(clicked(QModelIndex)),this,SLOT(on_item_clicked(QModelIndex)));
     connect(enable_watch,SIGNAL(stateChanged(int)),this,SLOT(on_setting_changed()));
-    connect(filter_btn,SIGNAL(clicked(bool)),this,SLOT(on_filter_btn_clicked()));
     connect(edit_btn,SIGNAL(clicked(bool)),this,SLOT(on_edit_btn_clicked()));
     connect(delete_record_btn,SIGNAL(clicked(bool)),this,SLOT(on_delete_record()));
     connect(enable_auto_save,SIGNAL(stateChanged(int)),this,SLOT(on_setting_changed()));
     connect(auto_save_file_name_btn,SIGNAL(clicked(bool)),this,SLOT(on_set_auto_save_file()));
-    connect(save_to_file,SIGNAL(clicked(bool)),this,SLOT(on_save_to_file()));
-    connect(load_from_file,SIGNAL(clicked(bool)),this,SLOT(on_load_from_file()));
     connect(record_count_set_btn,SIGNAL(clicked(bool)),this,SLOT(on_setting_changed()));
-    connect(export_image,SIGNAL(clicked(bool)),this,SLOT(on_export_image()));
-    connect(export_urls,SIGNAL(clicked(bool)),this,SLOT(on_export_urls()));
-    connect(export_text,SIGNAL(clicked(bool)),this,SLOT(on_export_text()));
-    connect(export_text_one,SIGNAL(clicked(bool)),this,SLOT(on_export_text_single()));
-    connect(export_html,SIGNAL(clicked(bool)),this,SLOT(on_export_html()));
-    connect(export_html_one,SIGNAL(clicked(bool)),this,SLOT(on_export_html_single()));
     connect(this,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(on_customContextMenuRequested()));
     connect(clear_all,SIGNAL(clicked(bool)),this,SLOT(on_clear_all()));
     connect(about_btn,SIGNAL(clicked(bool)),this,SLOT(on_about()));
-    connect(rel_close,SIGNAL(clicked(bool)),this,SLOT(on_real_exit()));
     connect(hide_btn,SIGNAL(clicked(bool)),this,SLOT(on_auto_hide()));
     connect(pView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_edit_btn_clicked()));
     connect(tray_icon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(on_tray_active(QSystemTrayIcon::ActivationReason)));
+    connect(this,SIGNAL(frame_in_out_sgn()),this,SLOT(on_in_out()));
 
 
 
@@ -324,6 +303,11 @@ void MainWidget::read_setting(){
         p.setX(desktop->width()-50);
     if(p.y()>desktop->height())
         p.setY(desktop->height()-50);
+    if(p.x()< -this->width())
+        p.setX(0);
+    if(p.y()< -this->height())
+        p.setY(0);
+
     move(p);
 #ifdef __WIN32
     auto_run->setChecked(pSettings->value("auto_run",false).toBool());
@@ -332,7 +316,7 @@ void MainWidget::read_setting(){
     flush_settings();
 }
 
-void MainWidget::on_filter_btn_clicked(){
+void MainWidget::on_filter_act_clicked(){
     TypeFilter type(this);
     NEED_NO_TOP(
     if(type.exec()){
@@ -494,7 +478,11 @@ void MainWidget::resizeEvent(QResizeEvent *){
 }
 
 void MainWidget::on_about(){
-    NEED_NO_TOP(QMessageBox::about(this,GS("ABOUT_MESSAGE"),GS("AUTHOR")+"：SkyFire\n"+GS("QQ")+"：1513008876\n"+GS("EMAIL")+"：skyfireitdiy@hotmail.com\n"+GS("PROJECT_ADDRESS")+"：http://git.oschina.net/skyfireitdiy/SFClipboard\n"+GS("VERSION")+"："+version+"\n"+GS("BUILD_TIME")+"："+__DATE__+" "+__TIME__+"\n\n\n"+GS("HELP_INFO")));
+    QMessageBox about_wnd(this);
+    about_wnd.setIconPixmap(QPixmap(":/pic/resource/about_icon.png"));
+    about_wnd.setWindowIconText(GS("ABOUT_MESSAGE"));
+    about_wnd.setText(GS("AUTHOR")+"：SkyFire\n"+GS("QQ")+"：1513008876\n"+GS("EMAIL")+"：skyfireitdiy@hotmail.com\n"+GS("PROJECT_ADDRESS")+"：http://git.oschina.net/skyfireitdiy/SFClipboard\n"+GS("VERSION")+"："+version+"\n"+GS("BUILD_TIME")+"："+__DATE__+" "+__TIME__+"\n\n\n"+GS("HELP_INFO"));
+    NEED_NO_TOP(about_wnd.exec());
 }
 
 void MainWidget::on_clear_all(){
@@ -619,6 +607,13 @@ void MainWidget::on_auto_load_auto_save_file(){
     write_setting();
 }
 
+void MainWidget::on_in_out(){
+    if(!auto_hide){
+        on_auto_hide();
+        if(auto_hide_widget!=nullptr)
+            auto_hide_widget->on_in_out();
+    }
+}
 
 
 #undef NEED_NO_TOP

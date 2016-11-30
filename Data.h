@@ -15,12 +15,12 @@ public:
     const Data& operator =(const Data& other);
     bool operator ==(const Data& other)const;
     bool operator !=(const Data& other)const;
-    int type;
-    QString text;
-    QString html;
-    QVariant image;
-    QVariant color;
-    QList<QUrl> urls;
+    int type={0};
+    QString text={""};
+    QString html={""};
+    QVariant image={};
+    QVariant color={};
+    QList<QUrl> urls={};
 
     void clear();
 signals:

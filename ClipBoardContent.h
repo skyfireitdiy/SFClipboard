@@ -38,15 +38,15 @@ public slots:
     void on_clear_all();
 
 private:
-    QQueue<Data> data;
-    QClipboard *pClip;
-    int data_type;
-    int max_record_count;
-    bool selecting;
-    bool editing;
-    bool enable;
-    bool is_auto_save;
-    QString auto_save_file;
+    QQueue<Data> data={};
+    QClipboard *pClip={nullptr};
+    int data_type={0};
+    int max_record_count={0};
+    bool selecting={false};
+    bool editing={false};
+    bool enable={false};
+    bool is_auto_save={false};
+    QString auto_save_file={""};
 
 
     void save_to_file(Data dt);

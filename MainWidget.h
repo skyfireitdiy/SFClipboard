@@ -48,12 +48,11 @@ signals:
     void rect_changed();
     void frame_in_out_sgn();
 
-
 public slots:
     void on_data_changed(QQueue<Data> data);
     void on_item_clicked(QModelIndex index);
     void on_setting_changed();
-    void on_filter_btn_clicked();
+    void on_filter_act_clicked();
     void on_edit_data(Data data,int index);
     void on_edit_btn_clicked();
     void on_delete_record();
@@ -84,13 +83,18 @@ public slots:
     void on_hot_delete(int num);
     void on_need_root();
     void on_pos_chnaged(QPoint pos);
+    void on_in_out();
 
 private:
     ClipBoardContent* pClipContent;
     QListView *pView;
     QStandardItemModel *pModel;
     QCheckBox *enable_watch;
-    QPushButton *filter_btn;
+
+    QAction *filter_act;
+
+
+
     QPushButton *edit_btn;
     QPushButton *delete_record_btn;
 
@@ -103,20 +107,21 @@ private:
     QLineEdit *record_count_edit;
     QPushButton *record_count_set_btn;
 
-    QPushButton *save_to_file;
-    QPushButton *load_from_file;
-    QPushButton *export_image;
-    QPushButton *export_urls;
+    QAction *save_to_file;
+
+    QAction *load_from_file;
+
+    QAction *export_image;
+    QAction *export_urls;
 
 
-    QPushButton *export_text;
-    QPushButton *export_text_one;
-    QPushButton *export_html;
-    QPushButton *export_html_one;
+    QAction *export_text;
+    QAction *export_text_one;
+    QAction *export_html;
+    QAction *export_html_one;
 
     QPushButton *about_btn;
     QPushButton *clear_all;
-    QPushButton *rel_close;
     QPushButton *hide_btn;
 
     AutoHide *auto_hide_widget;

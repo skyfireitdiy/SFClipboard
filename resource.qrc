@@ -7,6 +7,7 @@
         <file>resource/btn_pressed.png</file>
         <file>resource/btn_hover.png</file>
         <file>resource/btn.png</file>
+        <file>resource/about_icon.png</file>
     </qresource>
     <qresource prefix="/str">
         <file>bin/lang.ini</file>

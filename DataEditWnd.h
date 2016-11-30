@@ -67,6 +67,7 @@ public slots:
 
 private:
     void resizeEvent(QResizeEvent *);
+    void keyPressEvent(QKeyEvent *);
 };
 
 #endif // DATAEDITWND_H

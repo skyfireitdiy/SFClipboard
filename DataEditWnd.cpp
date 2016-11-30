@@ -124,9 +124,9 @@ DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data
 
     setLayout(main_layout);
 
-    setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint);
+    setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint|Qt::X11BypassWindowManagerHint);
 
-    setContentsMargins(120,40,120,40);
+    setContentsMargins(10,10,10,10);
     setStyleSheet("*{font-weight:bold;color:white;font-family:'微软雅黑';}"
                   ".QLineEdit{background-color:#FFFFFF;color:000000;}"
                   ".QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}"
@@ -149,6 +149,7 @@ DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data
     connect(ok_btn,SIGNAL(clicked(bool)),this,SLOT(on_ok()));
     connect(cancel_btn,SIGNAL(clicked(bool)),this,SLOT(on_cancel()));
     connect(save_current_image,SIGNAL(clicked(bool)),this,SLOT(on_save_image()));
+    connect(urls_edit,SIGNAL(returnPressed()),this,SLOT(on_add_urls()));
 }
 
 void DataEditWnd::on_color_changed(QColor color)
@@ -270,4 +271,8 @@ void DataEditWnd::resizeEvent(QResizeEvent *){
     QPalette pal;
     pal.setBrush(QPalette::Window,QBrush(QPixmap(":/pic/resource/background.png").scaled(size())));
     setPalette(pal);
+}
+
+void DataEditWnd::keyPressEvent(QKeyEvent *e){
+    e->ignore();
 }
