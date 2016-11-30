@@ -40,7 +40,7 @@ bool Data::operator ==(const Data & other)const{
     return this->type==other.type&&
             this->image==other.image&&
             this->text==other.text&&
-            this->html==other.text&&
+            this->html==other.html&&
             this->color==other.color&&
             this->urls==other.urls;
 }
