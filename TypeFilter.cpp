@@ -38,7 +38,7 @@ TypeFilter::TypeFilter(QWidget *parent):QDialog(parent)
     enable_color->setChecked(data_type&COLOR);
 
     setWindowFlags(windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint);
-    setContentsMargins(50,20,50,20);
+    setContentsMargins(10,10,10,10);
     setStyleSheet("*{font-weight:bold;color:white;font-family:'微软雅黑';}"
                   ".QLineEdit{background-color:#FFFFFF;color:000000;}"
                   ".QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}"
