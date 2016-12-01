@@ -26,7 +26,7 @@ SOURCES += \
     SingleApplication.cpp \
     SFLanguage.cpp \
     LinuxHook.cpp \
-    global.cpp
+    Global.cpp
 
 win32{
 HEADERS +=SFReg.h

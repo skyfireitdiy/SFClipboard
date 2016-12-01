@@ -4,6 +4,9 @@
 #include <QSettings>
 #include <SFLanguage.h>
 #include <SingleApplication.h>
+#include <QPushButton>
+#include <QPixmap>
+#include <QBitmap>
 #ifdef __WIN32
 #include <windows.h>
 
@@ -24,6 +27,6 @@ BOOL IsRunasAdmin();
 
 #endif
 
-
+bool set_button_backimg(QPushButton *button, QString img_path);
 
 #endif // GLOBAL_H

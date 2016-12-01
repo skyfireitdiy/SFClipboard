@@ -44,6 +44,7 @@ TypeFilter::TypeFilter(QWidget *parent):QDialog(parent)
                   ".QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}"
                   ".QPushButton:hover{border-image:url(:/pic/resource/btn_hover.png);border-width:5px;}"
                   ".QPushButton:disabled{border-image:url(:/pic/resource/btn_pressed.png);border-width:5px;}"
+                  ".QToolTip{background-color:#220000;color:#000000;}"
                   );
 
 }

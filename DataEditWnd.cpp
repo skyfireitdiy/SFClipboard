@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <SFLanguage.h>
 
+
 EXTERN_SF_LAN
 
 DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data_t),color_changed(false)
@@ -135,6 +136,7 @@ DataEditWnd::DataEditWnd(Data data_t, QWidget *parent):QDialog(parent),data(data
                   ".QPlainTextEdit{background-color:#220000;} "
                   ".QTextBrowser{background-color:#220000;}"
                   ".QListView{background-color:#220000;}"
+                  ".QToolTip{background-color:#220000;color:#000000;}"
                   );
 
 

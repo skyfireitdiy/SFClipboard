@@ -174,6 +174,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
                   ".QMessageBox{border-image:url(:/pic/resource/background.png);}"
                   ".QPlainTextEdit{background-color:#220000;}"
                   ".QTextBrowser{background-color:#220000;"
+                  ".QToolTip{background-color:#220000;color:#000000;}"
                   );
 
     setWindowOpacity(0.9);
@@ -508,14 +509,15 @@ void MainWidget::flush_settings(){
         connect(this,SIGNAL(rect_changed()),auto_hide_widget,SLOT(on_check_if_hide()));
         connect(this,SIGNAL(frame_in_out_sgn()),auto_hide_widget,SLOT(on_in_out()));
         connect(auto_hide_widget,SIGNAL(pos_changed(QPoint)),this,SLOT(on_pos_chnaged(QPoint)));
-        hide_btn->setText(GS("FIXED"));
+        set_button_backimg(hide_btn,":/pic/resource/fixed.png");
         float_fix_act->setText(GS("FIXED"));
     }else{
         if(auto_hide_widget){
             delete auto_hide_widget;
             auto_hide_widget=nullptr;
         }
-        hide_btn->setText(GS("FLOAT"));
+        hide_btn->setStyleSheet("");
+        set_button_backimg(hide_btn,":/pic/resource/float.png");
         float_fix_act->setText(GS("FLOAT"));
     }
 }

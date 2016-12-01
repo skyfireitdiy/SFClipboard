@@ -10,14 +10,14 @@
 #include <QProcess>
 #ifdef __WIN32
 #include <SFReg.h>
-#include <versionhelpers.h>
+#include <Windows.h>
 #endif
 
 EXTERN_SF_LAN
 
 SingleApplication *pApp=0;
 QSettings *pSettings;
-QString version="3.3.0.1";
+QString version="3.3.0.2";
 MainWidget *pMainWidget=nullptr;
 QString programName="SFClipboard";
 
@@ -43,26 +43,32 @@ int main(int argc,char ** argv){
 
 #ifdef __WIN32
     if(argc==1){
-        if(IsWindowsVistaOrGreater()){
-            if(!IsRunasAdmin()){
-                app.detach();
-                QString param="/adminoption 1";
-                SHELLEXECUTEINFOA execinfo;
-                memset(&execinfo, 0, sizeof(execinfo));
-                execinfo.lpFile         = argv[0];
-                execinfo.cbSize         = sizeof(execinfo);
-                execinfo.lpVerb         = "runas";
-                execinfo.fMask          = SEE_MASK_NO_CONSOLE;
-                execinfo.nShow          = SW_SHOWDEFAULT;
-                execinfo.lpParameters   = param.toLocal8Bit().data();
-                ShellExecuteExA(&execinfo);
+        OSVERSIONINFO   osver;
+        osver.dwOSVersionInfoSize   =   sizeof(OSVERSIONINFO);
+        GetVersionEx(&osver);
+        if(osver.dwPlatformId == 2)
+        {
+            if(osver.dwMajorVersion >=  6){
+                if(!IsRunasAdmin()){
+                    app.detach();
+                    QString param="/adminoption 1";
+                    SHELLEXECUTEINFOA execinfo;
+                    memset(&execinfo, 0, sizeof(execinfo));
+                    execinfo.lpFile         = argv[0];
+                    execinfo.cbSize         = sizeof(execinfo);
+                    execinfo.lpVerb         = "runas";
+                    execinfo.fMask          = SEE_MASK_NO_CONSOLE;
+                    execinfo.nShow          = SW_SHOWDEFAULT;
+                    execinfo.lpParameters   = param.toLocal8Bit().data();
+                    ShellExecuteExA(&execinfo);
+                    return 0;
+                }
+            }else{
+                pApp->detach();
+                QProcess process;
+                process.startDetached(argv[0]+QString(" /low"));
                 return 0;
             }
-        }else{
-            pApp->detach();
-            QProcess process;
-            process.startDetached(argv[0]+QString(" /low"));
-            return 0;
         }
     }else if(argc==2){
         if(argv[1]==QString("/low")){

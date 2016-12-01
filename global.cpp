@@ -25,3 +25,17 @@ BOOL IsRunasAdmin()
 }
 
 #endif
+
+
+bool set_button_backimg(QPushButton *button, QString img_path){
+    QPixmap pixmap(img_path);
+    if(pixmap.isNull())
+        return false;
+    if(button==nullptr)
+        return false;
+    button->setFixedSize(pixmap.size());
+    button->setMask(pixmap.createHeuristicMask());
+    button->setIcon(pixmap);
+    button->setIconSize(pixmap.size());
+    return true;
+}
