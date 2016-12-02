@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QApplication>
+#include <QMessageBox>
 
 int  TEXT =1;
 int  HTML =2;
@@ -23,6 +24,27 @@ ClipBoardContent::ClipBoardContent(QObject *parent) :QObject(parent),
     enable(true)
 {
     read_setting();
+    if(!database_file_name.isEmpty()){
+        database.setDatabaseName(database_file_name);
+        database.setUserName(database_user);
+        database.setPassword(QByteArray(database_ps));
+        if(database.open()){
+            QStringList tables=database.tables();
+            if(tables.indexOf("SFClipboard_database")==-1){
+                QSqlQuery query(database);
+                if(query.prepare("create table SFClipboard_database(type int,text blob,html blob,image blob,color blob,urls blob)")){
+                    QMessageBox::warning(0,QString("ok"),QString("database prepare ok"));
+                    if(!query.exec()){
+                        //TODO 创建失败
+                    }
+                }
+            }
+        }else{
+            //TODO： open 失败处理
+        }
+    }
+
+
     connect(pClip,SIGNAL(dataChanged()),this,SLOT(on_clip_data_changed()));
 }
 

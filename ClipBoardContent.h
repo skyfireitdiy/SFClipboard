@@ -8,6 +8,9 @@
 #include <QList>
 #include <QUrl>
 #include <Data.h>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <SFPassword.h>
 
 
 class ClipBoardContent : public QObject
@@ -48,6 +51,10 @@ private:
     bool is_auto_save={false};
     QString auto_save_file={""};
 
+    QSqlDatabase database=QSqlDatabase::addDatabase("QSQLITE",QLatin1String("SFClipboard_DB"));
+    QString database_file_name={"SFC.db"};
+    QString database_user={"SkyFire"};
+    SFPassword database_ps{QByteArray("SkyFire"),(QObject*)(this)};
 
     void save_to_file(Data dt);
 };

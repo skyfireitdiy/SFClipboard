@@ -1,4 +1,4 @@
-QT+=gui widgets
+QT+=gui widgets sql
 
 HEADERS += \
     MainWidget.h \
@@ -11,7 +11,9 @@ HEADERS += \
     WinHook.h \
     SingleApplication.h \
     SFLanguage.h \
-    LinuxHook.h
+    LinuxHook.h \
+    SFAES.h \
+    SFPassword.h
 
 
 SOURCES += \
@@ -26,7 +28,9 @@ SOURCES += \
     SingleApplication.cpp \
     SFLanguage.cpp \
     LinuxHook.cpp \
-    Global.cpp
+    Global.cpp \
+    SFAES.cpp \
+    SFPassword.cpp
 
 win32{
 HEADERS +=SFReg.h
