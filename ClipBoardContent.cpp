@@ -24,27 +24,6 @@ ClipBoardContent::ClipBoardContent(QObject *parent) :QObject(parent),
     enable(true)
 {
     read_setting();
-    if(!database_file_name.isEmpty()){
-        database.setDatabaseName(database_file_name);
-        database.setUserName(database_user);
-        database.setPassword(QByteArray(database_ps));
-        if(database.open()){
-            QStringList tables=database.tables();
-            if(tables.indexOf("SFClipboard_database")==-1){
-                QSqlQuery query(database);
-                if(query.prepare("create table SFClipboard_database(type int,text blob,html blob,image blob,color blob,urls blob)")){
-                    QMessageBox::warning(0,QString("ok"),QString("database prepare ok"));
-                    if(!query.exec()){
-                        //TODO 创建失败
-                    }
-                }
-            }
-        }else{
-            //TODO： open 失败处理
-        }
-    }
-
-
     connect(pClip,SIGNAL(dataChanged()),this,SLOT(on_clip_data_changed()));
 }
 
@@ -158,66 +137,80 @@ void ClipBoardContent::on_delete_record(int index){
 void ClipBoardContent::save_to_file(Data dt){
     if(auto_save_file.isEmpty())
         return;
-    QSettings st(auto_save_file,QSettings::IniFormat);
-    if(!st.isWritable())
+    if(auto_save_file.isEmpty())
         return;
-    int count=st.value("count",0).toInt();
-    count++;
-    st.setValue("count",count);
-    st.setValue("item"+QString::number(count)+"/type",dt.type);
-    st.setValue("item"+QString::number(count)+"/text",dt.text);
-    st.setValue("item"+QString::number(count)+"/html",dt.html);
-    st.setValue("item"+QString::number(count)+"/image",dt.image);
-    st.setValue("item"+QString::number(count)+"/color",dt.color);
-    st.setValue("item"+QString::number(count)+"/urls/count",dt.urls.count());
-    for(int i=0;i<dt.urls.count();++i)
-        st.setValue("item"+QString::number(count)+"/urls/item"+QString::number(i+1),dt.urls.at(i));
+    QSqlDatabase database=QSqlDatabase::addDatabase("QSQLITE",QLatin1String("SFClipboard_DB"));
+    database.setDatabaseName(auto_save_file);
+    if(!database.open())
+        return;
+    QStringList tables=database.tables();
+    if(tables.indexOf("SFClipboard_database")==-1){
+        QSqlQuery query(database);
+        if(query.prepare("create table SFClipboard_Table(type int,text blob,html blob,image blob,color blob,urls blob)")){
+            if(!query.exec()){
+                database.close();
+                return;
+            }
+        }
+    }
+    QSqlQuery insert_sql(database);
+    if(!insert_sql.prepare("insert into SFClipboard_Table values(?,?,?,?,?,?)"))
+        goto SqlError;
+    insert_sql.addBindValue(dt.type);
+    insert_sql.addBindValue(dt.text.toLocal8Bit());
+    insert_sql.addBindValue(dt.html.toLocal8Bit());
+    insert_sql.addBindValue(dt.image);
+    insert_sql.addBindValue(dt.color);
+    insert_sql.addBindValue(encode_urls(dt.urls));
+    insert_sql.exec();
+SqlError:
+    database.close();
 }
 
 void ClipBoardContent::on_save_to_file(QString file_name){
     if(file_name.isEmpty())
         return;
-    QSettings st(file_name,QSettings::IniFormat);
-    if(!st.isWritable())
-        return;
-    int count=st.value("count",0).toInt();
-    count++;
-    for(int i=data.size()-1;i>=0;--i){
-        st.setValue("count",count);
-        st.setValue("item"+QString::number(count)+"/type",data[i].type);
-        st.setValue("item"+QString::number(count)+"/text",data[i].text);
-        st.setValue("item"+QString::number(count)+"/html",data[i].html);
-        st.setValue("item"+QString::number(count)+"/image",data[i].image);
-        st.setValue("item"+QString::number(count)+"/color",data[i].color);
-        st.setValue("item"+QString::number(count)+"/urls/count",data[i].urls.count());
-        for(int j=0;j<data[i].urls.count();++j)
-            st.setValue("item"+QString::number(count)+"/urls/item"+QString::number(j+1),data[i].urls.at(j));
-        count++;
-    }
+    for(auto p:data)
+        save_to_file(p);
 }
 
 
 void ClipBoardContent::on_load_from_file(QString file_name){
     if(file_name.isEmpty())
         return;
-    QSettings st(file_name,QSettings::IniFormat);
     data.clear();
-    Data temp_data;
-    int num=st.value("count",0).toInt();
-    for(int count=1;count<=num;++count){
-        temp_data.clear();
-        temp_data.type=st.value("item"+QString::number(count)+"/type",0).toInt();
-        temp_data.text=st.value("item"+QString::number(count)+"/text","").toString();
-        temp_data.html=st.value("item"+QString::number(count)+"/html").toString();
-        temp_data.image=st.value("item"+QString::number(count)+"/image");
-        temp_data.color=st.value("item"+QString::number(count)+"/color");
-        int t=st.value("item"+QString::number(count)+"/urls/count").toInt();
-        for(int i=0;i<t;++i){
-            temp_data.urls.append(st.value("item"+QString::number(count)+"/urls/item"+QString::number(i+1)).toUrl());
+    QSqlDatabase database=QSqlDatabase::addDatabase("QSQLITE",QLatin1String("SFClipboard_DB"));
+    database.setDatabaseName(auto_save_file);
+    if(!database.open())
+        return;
+    QStringList tables=database.tables();
+    if(tables.indexOf("SFClipboard_database")==-1){
+        QSqlQuery query(database);
+        if(query.prepare("create table SFClipboard_Table(type int,text blob,html blob,image blob,color blob,urls blob)")){
+            if(!query.exec()){
+                database.close();
+                return;
+            }
         }
-        data.insert(data.begin(),temp_data);
+    }
+    Data temp_data;
+    QSqlQuery select_sql(database);
+    if(!select_sql.prepare("select * from SFClipboard_Table"))
+        goto SqlError;
+    if(!select_sql.exec())
+        goto SqlError;
+    data.clear();
+    while(select_sql.next()){
+        temp_data.type=select_sql.value("type").toInt();
+        temp_data.text=QString::fromLocal8Bit(select_sql.value("text").toByteArray());
+        temp_data.html=QString::fromLocal8Bit(select_sql.value("html").toByteArray());
+        temp_data.image=select_sql.value("image");
+        temp_data.color=select_sql.value("color");
+        data.push_front(temp_data);
     }
     emit data_changed(data);
+SqlError:
+    database.close();
 }
 
 
@@ -320,4 +313,32 @@ void ClipBoardContent::on_export_html_single(QString file_name){
 void ClipBoardContent::on_clear_all(){
     data.clear();
     emit data_changed(data);
+}
+
+
+QByteArray ClipBoardContent::encode_urls(QList<QUrl> url){
+    QByteArray ret;
+    for(auto p:url){
+        ret+=p.toString();
+        ret.append(char(0));
+    }
+    ret.append(char(0));
+    return ret;
+}
+
+QList<QUrl> ClipBoardContent::decode_urls(QByteArray data){
+    QList<QUrl> ret;
+    int head{0};
+    bool flags{true};
+    for(int i=0;i<data.size();++i){
+        if(data[i]==char(0)){
+            if(flags)
+                break;
+            ret.append(QUrl(QString::fromLocal8Bit(data.mid(head,i-head))));
+            flags=true;
+            head=i+1;
+            continue;
+        }
+    }
+    return ret;
 }

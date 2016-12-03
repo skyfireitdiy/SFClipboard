@@ -50,13 +50,9 @@ private:
     bool enable={false};
     bool is_auto_save={false};
     QString auto_save_file={""};
-
-    QSqlDatabase database=QSqlDatabase::addDatabase("QSQLITE",QLatin1String("SFClipboard_DB"));
-    QString database_file_name={"SFC.db"};
-    QString database_user={"SkyFire"};
-    SFPassword database_ps{QByteArray("SkyFire"),(QObject*)(this)};
-
     void save_to_file(Data dt);
+    QByteArray encode_urls(QList<QUrl> url);
+    QList<QUrl> decode_urls(QByteArray data);
 };
 
 #endif // CLIPBOARDCONTENT_H
