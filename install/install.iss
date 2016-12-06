@@ -47,6 +47,7 @@ Source: "{#ProjectDir}\bin\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignorevers
 Source: "{#ProjectDir}\bin\libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectDir}\bin\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectDir}\bin\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ProjectDir}\bin\Qt5Sql.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectDir}\bin\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectDir}\bin\SFClipboard.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectDir}\bin\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion recursesubdirs createallsubdirs
