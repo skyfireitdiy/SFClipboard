@@ -11,19 +11,25 @@
 #ifdef __WIN32
 #include <SFReg.h>
 #include <Windows.h>
+#else
+
 #endif
+
+#include <GetPs.h>
+#include <SFPassword.h>
 
 EXTERN_SF_LAN
 
 SingleApplication *pApp=0;
 QSettings *pSettings;
-QString version="3.3.0.4";
+QString version="3.3.0.5";
 MainWidget *pMainWidget=nullptr;
 QString programName="SFClipboard";
 
 int main(int argc,char ** argv){
     SingleApplication app(argc,argv,programName);
     pApp=&app;
+    pSettings=new QSettings("sfclip.ini",QSettings::IniFormat,pApp);
 #ifdef __WIN32
     char file_full_path[256]{0};
     GetModuleFileNameA(0,file_full_path,256);
@@ -34,12 +40,15 @@ int main(int argc,char ** argv){
     if(!lang_file.exists()){
         QFile lang_rc_file(":/str/bin/lang.ini");
         lang_rc_file.copy("lang.ini");
+        pSettings->setValue("lang","Chinese");
+        pSettings->sync();
     }
     __lan_st=new SFLanguage("lang.ini","Chinese");
 #endif
-
-    pSettings=new QSettings("sfclip.ini",QSettings::IniFormat,pApp);
-    SET_LANG(pSettings->value("lang").toString());
+    QString lang_type=pSettings->value("lang").toString();
+    lang_type=lang_type.isEmpty()?"Chinese":lang_type;
+    __lan_st=new SFLanguage("lang.ini",lang_type);
+    SET_LANG(lang_type);
 
 #ifdef __WIN32
     if(argc==1){
@@ -79,6 +88,21 @@ int main(int argc,char ** argv){
             return 0;
         }
     }
+
+#else
+    if(!if_is_linux_root()){
+        GetPs pswnd(0);
+        pswnd.exec();
+        app.detach();
+        SFPassword ps(pswnd.get_ps());
+        QFile file(":/shell/resource/run_as_root.sh");
+        file.copy("run_as_root.sh");
+        run_process("chmod +x run_as_root.sh");
+        qDebug()<<"./run_as_root.sh "+QString::fromLocal8Bit(ps)+" "+qApp->arguments()[0];
+        QProcess::startDetached("./run_as_root.sh "+QString::fromLocal8Bit(ps)+" "+qApp->arguments()[0]);
+        return 0;
+    }
+
 #endif
 
     if(app.isRunning()){

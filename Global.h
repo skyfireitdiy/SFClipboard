@@ -25,6 +25,12 @@ extern QString version;
 #ifdef __WIN32
 BOOL IsRunasAdmin();
 
+#else
+
+bool if_is_linux_root();
+QString run_process(QString cmd);
+
+
 #endif
 
 bool set_button_backimg(QPushButton *button, QString img_path);

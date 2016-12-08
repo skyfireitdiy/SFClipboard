@@ -15,6 +15,7 @@
 #include <QEventLoop>
 #include <QMessageBox>
 #include <SFLanguage.h>
+#include <Global.h>
 
 EXTERN_SF_LAN
 
@@ -48,18 +49,6 @@ void setHook(){
     }).detach();
 }
 
-
-
-QString run_process(QString cmd){
-    QProcess pro;
-    QEventLoop event;
-    QString ret_str;
-    QObject::connect(&pro,SIGNAL(finished(int)),&event,SLOT(quit()));
-    QObject::connect(&pro,&QProcess::readyReadStandardOutput,[&](){ret_str+=pro.readAllStandardOutput();});
-    pro.start(cmd);
-    event.exec();
-    return ret_str;
-}
 
 LinuxKeyHook::LinuxKeyHook(QObject *parent):
     QObject(parent)

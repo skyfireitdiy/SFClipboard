@@ -13,7 +13,8 @@ HEADERS += \
     SFLanguage.h \
     LinuxHook.h \
     SFAES.h \
-    SFPassword.h
+    SFPassword.h \
+    GetPs.h
 
 
 SOURCES += \
@@ -28,9 +29,10 @@ SOURCES += \
     SingleApplication.cpp \
     SFLanguage.cpp \
     LinuxHook.cpp \
-    Global.cpp \
     SFAES.cpp \
-    SFPassword.cpp
+    SFPassword.cpp \
+    Global.cpp \
+    GetPs.cpp
 
 win32{
 HEADERS +=SFReg.h

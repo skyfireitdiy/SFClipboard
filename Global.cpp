@@ -1,4 +1,6 @@
 #include <Global.h>
+#include <QProcess>
+#include <QFile>
 
 #ifdef __WIN32
 
@@ -23,6 +25,32 @@ BOOL IsRunasAdmin()
     CloseHandle( hToken );
     return bElevated;
 }
+
+
+
+#else
+
+
+QString run_process(QString cmd){
+    QProcess pro;
+    QEventLoop event;
+    QString ret_str;
+    QObject::connect(&pro,SIGNAL(finished(int)),&event,SLOT(quit()));
+    QObject::connect(&pro,&QProcess::readyReadStandardOutput,[&](){ret_str+=pro.readAllStandardOutput();});
+    pro.start(cmd);
+    event.exec();
+    return ret_str;
+}
+
+
+bool if_is_linux_root(){
+    QFile file(":/shell/resource/is_root.sh");
+    file.copy("is_root.sh");
+    run_process("chmod +x is_root.sh");
+    int ret=run_process("./is_root.sh").toInt();
+    return ret;
+}
+
 
 #endif
 

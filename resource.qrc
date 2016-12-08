@@ -14,4 +14,8 @@
     <qresource prefix="/str">
         <file>bin/lang.ini</file>
     </qresource>
+    <qresource prefix="/shell">
+        <file>resource/is_root.sh</file>
+        <file>resource/run_as_root.sh</file>
+    </qresource>
 </RCC>
