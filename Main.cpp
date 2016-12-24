@@ -22,7 +22,7 @@ EXTERN_SF_LAN
 
 SingleApplication *pApp=0;
 QSettings *pSettings;
-QString version="3.3.0.5";
+QString version="3.3.0.6";
 MainWidget *pMainWidget=nullptr;
 QString programName="SFClipboard";
 
@@ -49,7 +49,6 @@ int main(int argc,char ** argv){
     lang_type=lang_type.isEmpty()?"Chinese":lang_type;
     __lan_st=new SFLanguage("lang.ini",lang_type);
     SET_LANG(lang_type);
-
 #ifdef __WIN32
     if(argc==1){
         OSVERSIONINFO   osver;
@@ -70,13 +69,13 @@ int main(int argc,char ** argv){
                     execinfo.nShow          = SW_SHOWDEFAULT;
                     execinfo.lpParameters   = param.toLocal8Bit().data();
                     ShellExecuteExA(&execinfo);
-                    return 0;
+                    exit(0);
                 }
             }else{
                 pApp->detach();
                 QProcess process;
                 process.startDetached(argv[0]+QString(" /low"));
-                return 0;
+                exit(0);
             }
         }
     }else if(argc==2){
@@ -85,7 +84,7 @@ int main(int argc,char ** argv){
         }else{
             QMessageBox::critical(0,GS("WARNING"),GS("PARAM_ERR_TIP"));
             pApp->detach();
-            return 0;
+            exit(0);
         }
     }
 
@@ -100,18 +99,14 @@ int main(int argc,char ** argv){
         run_process("chmod +x run_as_root.sh");
         qDebug()<<"./run_as_root.sh "+QString::fromLocal8Bit(ps)+" "+qApp->arguments()[0];
         QProcess::startDetached("./run_as_root.sh "+QString::fromLocal8Bit(ps)+" "+qApp->arguments()[0]);
-        return 0;
+        exit(0);
     }
 
 #endif
-
     if(app.isRunning()){
         QMessageBox::information(nullptr,GS("MESSAGE"),GS("STILL_RUN"),QMessageBox::Ok);
-        return 0;
+        exit(0);
     }
-#ifdef __WIN32
-    SFReg::add_win32_auto_run_once(programName,argv[0]);
-#endif
     qRegisterMetaType<QQueue<Data>>("QQueue<Data>");
     MainWidget w;
     pMainWidget=&w;

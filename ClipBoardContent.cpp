@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QApplication>
 #include <QMessageBox>
+#include <QDataStream>
 
 int  TEXT =1;
 int  HTML =2;
@@ -137,14 +138,12 @@ void ClipBoardContent::on_delete_record(int index){
 void ClipBoardContent::save_to_file(Data dt){
     if(auto_save_file.isEmpty())
         return;
-    if(auto_save_file.isEmpty())
-        return;
     QSqlDatabase database=QSqlDatabase::addDatabase("QSQLITE",QLatin1String("SFClipboard_DB"));
     database.setDatabaseName(auto_save_file);
     if(!database.open())
         return;
     QStringList tables=database.tables();
-    if(tables.indexOf("SFClipboard_database")==-1){
+    if(tables.indexOf("SFClipboard_Table")==-1){
         QSqlQuery query(database);
         if(query.prepare("create table SFClipboard_Table(type int,text blob,html blob,image blob,color blob,urls blob)")){
             if(!query.exec()){
@@ -154,16 +153,17 @@ void ClipBoardContent::save_to_file(Data dt){
         }
     }
     QSqlQuery insert_sql(database);
-    if(!insert_sql.prepare("insert into SFClipboard_Table values(?,?,?,?,?,?)"))
-        goto SqlError;
+    if(!insert_sql.prepare("insert into SFClipboard_Table values(?,?,?,?,?,?)")){
+        database.close();
+        return;
+    }
     insert_sql.addBindValue(dt.type);
     insert_sql.addBindValue(dt.text.toLocal8Bit());
     insert_sql.addBindValue(dt.html.toLocal8Bit());
-    insert_sql.addBindValue(dt.image);
-    insert_sql.addBindValue(dt.color);
+    insert_sql.addBindValue(qvariant2qbytearray(dt.image));
+    insert_sql.addBindValue(qvariant2qbytearray(dt.color));
     insert_sql.addBindValue(encode_urls(dt.urls));
     insert_sql.exec();
-SqlError:
     database.close();
 }
 
@@ -184,7 +184,7 @@ void ClipBoardContent::on_load_from_file(QString file_name){
     if(!database.open())
         return;
     QStringList tables=database.tables();
-    if(tables.indexOf("SFClipboard_database")==-1){
+    if(tables.indexOf("SFClipboard_Table")==-1){
         QSqlQuery query(database);
         if(query.prepare("create table SFClipboard_Table(type int,text blob,html blob,image blob,color blob,urls blob)")){
             if(!query.exec()){
@@ -195,21 +195,25 @@ void ClipBoardContent::on_load_from_file(QString file_name){
     }
     Data temp_data;
     QSqlQuery select_sql(database);
-    if(!select_sql.prepare("select * from SFClipboard_Table"))
-        goto SqlError;
-    if(!select_sql.exec())
-        goto SqlError;
+    if(!select_sql.prepare("select * from SFClipboard_Table")){
+        database.close();
+        return;
+    }
+    if(!select_sql.exec()){
+        database.close();
+        return;
+    }
     data.clear();
     while(select_sql.next()){
         temp_data.type=select_sql.value("type").toInt();
         temp_data.text=QString::fromLocal8Bit(select_sql.value("text").toByteArray());
         temp_data.html=QString::fromLocal8Bit(select_sql.value("html").toByteArray());
-        temp_data.image=select_sql.value("image");
-        temp_data.color=select_sql.value("color");
+        temp_data.image=qbytearray2qvariant(select_sql.value("image").toByteArray());
+        temp_data.color=qbytearray2qvariant(select_sql.value("color").toByteArray());
+        temp_data.urls=decode_urls(select_sql.value("urls").toByteArray());
         data.push_front(temp_data);
     }
     emit data_changed(data);
-SqlError:
     database.close();
 }
 
@@ -317,28 +321,32 @@ void ClipBoardContent::on_clear_all(){
 
 
 QByteArray ClipBoardContent::encode_urls(QList<QUrl> url){
-    QByteArray ret;
+    QStringList strlist;
     for(auto p:url){
-        ret+=p.toString();
-        ret.append(char(0));
+        strlist.append(p.toString());
     }
-    ret.append(char(0));
-    return ret;
+    return qvariant2qbytearray(strlist);
 }
 
 QList<QUrl> ClipBoardContent::decode_urls(QByteArray data){
+    QVariant var=qbytearray2qvariant(data);
+    auto tmp=var.toStringList();
     QList<QUrl> ret;
-    int head{0};
-    bool flags{true};
-    for(int i=0;i<data.size();++i){
-        if(data[i]==char(0)){
-            if(flags)
-                break;
-            ret.append(QUrl(QString::fromLocal8Bit(data.mid(head,i-head))));
-            flags=true;
-            head=i+1;
-            continue;
-        }
+    for(auto p:tmp){
+        ret.append(QUrl(p));
     }
     return ret;
+}
+
+
+QByteArray ClipBoardContent::qvariant2qbytearray(QVariant t){
+    QByteArray ret;
+    QDataStream stream(&ret,QIODevice::WriteOnly);
+    t.save(stream);
+    return ret;
+}
+
+QVariant ClipBoardContent::qbytearray2qvariant(QByteArray b){
+    QDataStream stream(b);
+    return stream;
 }

@@ -581,7 +581,7 @@ void MainWidget::on_lang_set(QAction *act){
         pSettings->sync();
         QProcess pro;
         pro.startDetached(pApp->arguments().at(0));
-        pApp->exit(0);
+        exit(0);
     }
 }
 
