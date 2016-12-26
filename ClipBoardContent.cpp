@@ -79,7 +79,7 @@ void ClipBoardContent::on_clip_data_changed(){
         save_to_file(tempData);
     }
     emit data_changed(data);
-    emit tray_msg(GS("NEW_CONTENT"),"");
+    //emit tray_msg(GS("NEW_CONTENT"),"");
 }
 
 void ClipBoardContent::read_setting(){

@@ -21,7 +21,7 @@ AutoHide::AutoHide(QWidget *parent) : QObject(parent),parent_widget(parent),mous
     parent_widget->setMouseTracking(true);
     parent_widget->installEventFilter(this);
     parent_widget->setWindowFlags(parent_widget->windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint|Qt::Tool);
-    emit tray_msg(GS("FLOAT"),GS("START_FLOAT"));
+    //emit tray_msg(GS("FLOAT"),GS("START_FLOAT"));
 }
 
 
@@ -150,5 +150,5 @@ void AutoHide::on_in_out(){
 }
 
 AutoHide::~AutoHide(){
-    emit tray_msg(GS("FLOAT"),GS("START_FIXED"));
+    //emit tray_msg(GS("FLOAT"),GS("START_FIXED"));
 }
