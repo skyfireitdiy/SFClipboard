@@ -85,6 +85,8 @@ public slots:
     void on_pos_chnaged(QPoint pos);
     void on_in_out();
 
+    void on_tray_msg(QString title, QString msg);
+
 private:
     ClipBoardContent* pClipContent;
     QListView *pView;

@@ -218,9 +218,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     if(auto_load_auto_save_file_act->isChecked()){
         emit load_from_file_sgn(auto_save_file_name->text());
     }
-
-
     setHook();
+    on_tray_msg(GS("START"),GS("START_MSG"));
 }
 
 
@@ -361,6 +360,7 @@ void MainWidget::on_set_auto_save_file(){
         file_name+=".sfclp";
     auto_save_file_name->setText(file_name);
     on_setting_changed();
+    on_tray_msg(GS("AUTO_SAVE"),file_name);
 }
 
 
@@ -446,6 +446,7 @@ void MainWidget::closeEvent(QCloseEvent *event){
     hide();
     if(!real_exit){
         event->ignore();
+        on_tray_msg(GS("CLOSE"),GS("HIDE_TO_TRAY"));
     }else{
         event->accept();
         pApp->exit(0);
@@ -615,6 +616,11 @@ void MainWidget::on_in_out(){
         if(auto_hide_widget!=nullptr)
             auto_hide_widget->on_in_out();
     }
+}
+
+
+void MainWidget::on_tray_msg(QString title,QString msg){
+    tray_icon->showMessage(title,msg);
 }
 
 

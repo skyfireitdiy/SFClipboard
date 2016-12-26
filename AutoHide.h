@@ -10,7 +10,7 @@ class AutoHide : public QObject
     Q_OBJECT
 public:
     explicit AutoHide(QWidget *parent = 0);
-
+    ~AutoHide();
 signals:
 
 public slots:
@@ -20,6 +20,7 @@ public slots:
     void on_in_out();
 signals:
     void pos_changed(QPoint);
+    void tray_msg(QString title,QString msg);
 private:
     QWidget *parent_widget;
     QTimer *start_hide_timer;

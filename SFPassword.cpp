@@ -22,6 +22,8 @@ SFPassword::operator QByteArray()const{
 }
 
 SFPassword::SFPassword(SFPassword &&other){
+    if(this==&other)
+        return;
     memmove(this,&other,sizeof(SFPassword));
     memset(&other,0,sizeof(SFPassword));
 }

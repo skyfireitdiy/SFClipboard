@@ -22,6 +22,7 @@ public:
 signals:
     void data_changed(QQueue<Data>);
     void edit_data(Data,int);
+    void tray_msg(QString title,QString msg);
 public slots:
     void on_clip_data_changed();
     void read_setting();

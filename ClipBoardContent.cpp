@@ -8,6 +8,9 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QDataStream>
+#include <SFLanguage.h>
+
+EXTERN_SF_LAN
 
 int  TEXT =1;
 int  HTML =2;
@@ -26,6 +29,7 @@ ClipBoardContent::ClipBoardContent(QObject *parent) :QObject(parent),
 {
     read_setting();
     connect(pClip,SIGNAL(dataChanged()),this,SLOT(on_clip_data_changed()));
+    connect(this,SIGNAL(tray_msg(QString,QString)),parent,SLOT(on_tray_msg(QString,QString)));
 }
 
 
@@ -75,6 +79,7 @@ void ClipBoardContent::on_clip_data_changed(){
         save_to_file(tempData);
     }
     emit data_changed(data);
+    emit tray_msg(GS("NEW_CONTENT"),"");
 }
 
 void ClipBoardContent::read_setting(){
@@ -172,6 +177,7 @@ void ClipBoardContent::on_save_to_file(QString file_name){
         return;
     for(auto p:data)
         save_to_file(p);
+    emit tray_msg(GS("SAVE_TO_FILE"),GS("SUCCESS"));
 }
 
 
@@ -215,6 +221,7 @@ void ClipBoardContent::on_load_from_file(QString file_name){
     }
     emit data_changed(data);
     database.close();
+    emit tray_msg(GS("LOAD_FROM_FILE"),GS("SUCCESS"));
 }
 
 
@@ -230,6 +237,7 @@ void ClipBoardContent::on_export_image(QString dir){
             count++;
         }
     }
+    emit tray_msg(GS("EXPORT_IMAGE"),GS("SUCCESS"));
 }
 
 
@@ -244,6 +252,7 @@ void ClipBoardContent::on_export_urls(QString file_name){
         }
     }
     file.close();
+    emit tray_msg(GS("EXPORT_URL"),GS("SUCCESS"));
 }
 
 
@@ -262,6 +271,7 @@ void ClipBoardContent::on_export_text(QString dir){
             count++;
         }
     }
+    emit tray_msg(GS("EXPORT_TEXT"),GS("SUCCESS"));
 }
 
 
@@ -276,6 +286,7 @@ void ClipBoardContent::on_export_text_single(QString file_name){
         }
     }
     file.close();
+    emit tray_msg(GS("EXPORT_TEXT_SINGLE"),GS("SUCCESS"));
 }
 
 
@@ -296,6 +307,7 @@ void ClipBoardContent::on_export_html(QString dir){
             count++;
         }
     }
+    emit tray_msg(GS("EXPORT_HTML"),GS("SUCCESS"));
 }
 
 
@@ -311,12 +323,14 @@ void ClipBoardContent::on_export_html_single(QString file_name){
         }
     }
     file.close();
+    emit tray_msg(GS("EXPORT_HTML_SINGLE"),GS("SUCCESS"));
 }
 
 
 void ClipBoardContent::on_clear_all(){
     data.clear();
     emit data_changed(data);
+    emit tray_msg(GS("CLEAR"),GS("SUCCESS"));
 }
 
 

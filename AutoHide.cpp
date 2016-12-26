@@ -4,9 +4,12 @@
 #include <QMouseEvent>
 #include <QApplication>
 #include <QDebug>
+#include <SFLanguage.h>
 
 static const int hide_speed=10;
 static const int show_speed=30;
+
+EXTERN_SF_LAN
 
 AutoHide::AutoHide(QWidget *parent) : QObject(parent),parent_widget(parent),mouse_press(false)
 {
@@ -14,9 +17,11 @@ AutoHide::AutoHide(QWidget *parent) : QObject(parent),parent_widget(parent),mous
     show_timer=new QTimer(this);
     connect(hide_timer,SIGNAL(timeout()),this,SLOT(on_hide_widget()));
     connect(show_timer,SIGNAL(timeout()),this,SLOT(on_show_widget()));
+    connect(this,SIGNAL(tray_msg(QString,QString)),parent,SLOT(on_tray_msg(QString,QString)));
     parent_widget->setMouseTracking(true);
     parent_widget->installEventFilter(this);
     parent_widget->setWindowFlags(parent_widget->windowFlags()|Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::X11BypassWindowManagerHint|Qt::Tool);
+    emit tray_msg(GS("FLOAT"),GS("START_FLOAT"));
 }
 
 
@@ -142,4 +147,8 @@ void AutoHide::on_in_out(){
         in=true;
         show_timer->start(5);
     }
+}
+
+AutoHide::~AutoHide(){
+    emit tray_msg(GS("FLOAT"),GS("START_FIXED"));
 }
