@@ -18,13 +18,6 @@
 #include <QProcess>
 #include <SFReg.h>
 #include <QDesktopWidget>
-
-#ifdef __WIN32
-SF_LAN_INIT(":/str/bin/lang.ini","Chinese")
-#else
-SFLanguage *__lan_st=nullptr;
-#endif
-
 #ifdef _WIN32
 #include <windows.h>
 #include <WinHook.h>
@@ -35,6 +28,11 @@ SFLanguage *__lan_st=nullptr;
 #include <LinuxHook.h>
 #endif
 #endif
+
+
+SFLanguage *__lan_st=nullptr;
+
+#define _1000_MS 1000
 
 static const int list_margin=30;
 static const int menu_height=200;
@@ -220,6 +218,9 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     }
     setHook();
     on_tray_msg(GS("START"),GS("START_MSG"));
+
+    pSettings->setValue("version",version);
+
 }
 
 
@@ -580,6 +581,13 @@ void MainWidget::on_lang_set(QAction *act){
         pSettings->setValue("lang",act->text());
         pApp->detach();
         pSettings->sync();
+
+#ifdef _WIN32
+        Sleep(_1000_MS);
+#else
+        msleep(_1000_MS);
+#endif
+
         QProcess pro;
         pro.startDetached(pApp->arguments().at(0));
         exit(0);

@@ -22,7 +22,7 @@ EXTERN_SF_LAN
 
 SingleApplication *pApp=0;
 QSettings *pSettings;
-QString version="3.3.0.7";
+QString version="3.3.0.8";
 MainWidget *pMainWidget=nullptr;
 QString programName="SFClipboard";
 
@@ -35,16 +35,16 @@ int main(int argc,char ** argv){
     GetModuleFileNameA(0,file_full_path,256);
     QFileInfo curr_file(file_full_path);
     SetCurrentDirectoryA(curr_file.path().toLocal8Bit());
-#else
+#endif
     QFile lang_file("lang.ini");
-    if(!lang_file.exists()){
+    if(pSettings->value("version").toString()!=version||!lang_file.exists()){
         QFile lang_rc_file(":/str/bin/lang.ini");
         lang_rc_file.copy("lang.ini");
         pSettings->setValue("lang","Chinese");
         pSettings->sync();
     }
     __lan_st=new SFLanguage("lang.ini","Chinese");
-#endif
+
     QString lang_type=pSettings->value("lang").toString();
     lang_type=lang_type.isEmpty()?"Chinese":lang_type;
     __lan_st=new SFLanguage("lang.ini",lang_type);
