@@ -39,6 +39,7 @@ int main(int argc,char ** argv){
     QFile lang_file("lang.ini");
     if(pSettings->value("version").toString()!=version||!lang_file.exists()){
         QFile lang_rc_file(":/str/bin/lang.ini");
+        remove("lang.ini");
         lang_rc_file.copy("lang.ini");
         pSettings->setValue("lang","Chinese");
         pSettings->sync();
