@@ -50,6 +50,7 @@ Source: "{#ProjectDir}\bin\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectDir}\bin\Qt5Sql.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectDir}\bin\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectDir}\bin\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#ProjectDir}\bin\sqldrivers\qsqlite.dll"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
