@@ -29,6 +29,7 @@
 #endif
 #endif
 
+//#define FOR_FF
 
 SFLanguage *__lan_st=nullptr;
 
@@ -203,7 +204,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     connect(enable_auto_save,SIGNAL(stateChanged(int)),this,SLOT(on_setting_changed()));
     connect(auto_save_file_name_btn,SIGNAL(clicked(bool)),this,SLOT(on_set_auto_save_file()));
     connect(record_count_set_btn,SIGNAL(clicked(bool)),this,SLOT(on_setting_changed()));
-    connect(this,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(on_customContextMenuRequested()));
+    //connect(this,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(on_customContextMenuRequested()));
     connect(clear_all,SIGNAL(clicked(bool)),this,SLOT(on_clear_all()));
     connect(about_btn,SIGNAL(clicked(bool)),this,SLOT(on_about()));
     connect(hide_btn,SIGNAL(clicked(bool)),this,SLOT(on_auto_hide()));
@@ -450,6 +451,7 @@ void MainWidget::closeEvent(QCloseEvent *event){
         on_tray_msg(GS("CLOSE"),GS("HIDE_TO_TRAY"));
     }else{
         event->accept();
+        tray_icon->hide();
         pApp->exit(0);
     }
 }
@@ -482,7 +484,11 @@ void MainWidget::resizeEvent(QResizeEvent *){
 
 void MainWidget::on_about(){
     QMessageBox about_wnd(this);
+#ifdef FOR_FF
     about_wnd.setIconPixmap(QPixmap(":/pic/resource/about_icon.png"));
+#else
+    about_wnd.setIconPixmap(QPixmap(":/pic/resource/sponse.png"));
+#endif
     about_wnd.setWindowIconText(GS("ABOUT_MESSAGE"));
     about_wnd.setText(GS("AUTHOR")+"：SkyFire\n"+GS("QQ")+"：1513008876\n"+GS("EMAIL")+"：skyfireitdiy@hotmail.com\n"+GS("PROJECT_ADDRESS")+"：http://git.oschina.net/skyfireitdiy/SFClipboard\n"+GS("VERSION")+"："+version+"\n"+GS("BUILD_TIME")+"："+__DATE__+" "+__TIME__+"\n\n\n"+GS("HELP_INFO"));
     NEED_NO_TOP(about_wnd.exec());
@@ -589,7 +595,8 @@ void MainWidget::on_lang_set(QAction *act){
 #endif
 
         QProcess pro;
-        pro.startDetached(pApp->arguments().at(0));
+        pro.startDetached("\""+pApp->arguments().at(0)+"\"");
+        tray_icon->hide();
         exit(0);
     }
 }

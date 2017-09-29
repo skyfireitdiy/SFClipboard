@@ -2,7 +2,7 @@ Copyright (c) 2016 SkyFire
 
 感谢你使用本软件！
 
-本软件为开源项目，项目地址：[开源中国](http://git.oschina.net/skyfireitdiy/SFClipboard
+本软件为开源项目，项目地址：[开源中国] http://git.oschina.net/skyfireitdiy/SFClipboard
 
 注意！！！
 

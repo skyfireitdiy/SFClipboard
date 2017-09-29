@@ -10,6 +10,7 @@
         <file>resource/about_icon.png</file>
         <file>resource/fixed.png</file>
         <file>resource/float.png</file>
+        <file>resource/sponse.png</file>
     </qresource>
     <qresource prefix="/str">
         <file>bin/lang.ini</file>
