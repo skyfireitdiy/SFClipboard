@@ -20,15 +20,24 @@
 
 EXTERN_SF_LAN
 
-SingleApplication *pApp=0;
+QApplication *pApp = nullptr;
+SingleApplication *pSingleApp = nullptr;
 QSettings *pSettings;
-QString version="3.3.0.9";
+QString version="3.3.0.10";
 MainWidget *pMainWidget=nullptr;
-QString programName="SFClipboard";
+QString programName="SFClipboard"+version;
 
 int main(int argc,char ** argv){
-    SingleApplication app(argc,argv,programName);
+    QApplication app(argc,argv);
     pApp=&app;
+    
+    app.setStyleSheet(
+                "*{color:white;font-family:'微软雅黑';background-color:#0F0F19;color:#FFFFFF;}"
+                "QPlainTextEdit,QLineEdit,QTextBrowser{background-color:#FFFFFF;color:000000;}"
+                );
+                
+    SingleApplication singleApp(programName);
+    pSingleApp = &singleApp;
     pSettings=new QSettings("sfclip.ini",QSettings::IniFormat,pApp);
 #ifdef __WIN32
     char file_full_path[256]{0};
@@ -59,7 +68,7 @@ int main(int argc,char ** argv){
         {
             if(osver.dwMajorVersion >=  6){
                 if(!IsRunasAdmin()){
-                    app.detach();
+                    singleApp.detach();
                     QString param="/adminoption 1";
                     SHELLEXECUTEINFOA execinfo;
                     memset(&execinfo, 0, sizeof(execinfo));
@@ -73,7 +82,7 @@ int main(int argc,char ** argv){
                     exit(0);
                 }
             }else{
-                pApp->detach();
+                singleApp.detach();
                 QProcess process;
                 process.startDetached(argv[0]+QString(" /low"));
                 exit(0);
@@ -84,7 +93,7 @@ int main(int argc,char ** argv){
 
         }else{
             QMessageBox::critical(0,GS("WARNING"),GS("PARAM_ERR_TIP"));
-            pApp->detach();
+            singleApp.detach();
             exit(0);
         }
     }
@@ -93,7 +102,7 @@ int main(int argc,char ** argv){
     if(!if_is_linux_root()){
         GetPs pswnd(0);
         pswnd.exec();
-        app.detach();
+        singleApp.detach();
         SFPassword ps(pswnd.get_ps());
         QFile file(":/shell/resource/run_as_root.sh");
         file.copy("run_as_root.sh");
@@ -104,8 +113,9 @@ int main(int argc,char ** argv){
     }
 
 #endif
-    if(app.isRunning()){
+    if(singleApp.isRunning()){
         QMessageBox::information(nullptr,GS("MESSAGE"),GS("STILL_RUN"),QMessageBox::Ok);
+        singleApp.detach();
         exit(0);
     }
     qRegisterMetaType<QQueue<Data>>("QQueue<Data>");
@@ -113,6 +123,6 @@ int main(int argc,char ** argv){
     pMainWidget=&w;
     w.show();
     int ret=app.exec();
-    app.detach();
+    singleApp.detach();
     return ret;
 }

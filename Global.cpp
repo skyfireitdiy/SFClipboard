@@ -54,6 +54,7 @@ bool if_is_linux_root(){
 
 #endif
 
+#include <QDebug>
 
 bool set_button_backimg(QPushButton *button, QString img_path){
     QPixmap pixmap(img_path);
@@ -65,5 +66,6 @@ bool set_button_backimg(QPushButton *button, QString img_path){
     button->setMask(pixmap.createHeuristicMask());
     button->setIcon(pixmap);
     button->setIconSize(pixmap.size());
+    button->update();
     return true;
 }

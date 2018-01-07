@@ -140,11 +140,10 @@ void ClipBoardContent::on_delete_record(int index){
 }
 
 
-void ClipBoardContent::save_to_file(Data dt){
-    if(auto_save_file.isEmpty())
-        return;
+void ClipBoardContent::save_to_file(QString fileName, Data dt)
+{
     QSqlDatabase database=QSqlDatabase::addDatabase("QSQLITE",QLatin1String("SFClipboard_DB"));
-    database.setDatabaseName(auto_save_file);
+    database.setDatabaseName(fileName);
     if(!database.open())
         return;
     QStringList tables=database.tables();
@@ -172,11 +171,18 @@ void ClipBoardContent::save_to_file(Data dt){
     database.close();
 }
 
+
+void ClipBoardContent::save_to_file(Data dt){
+    if(auto_save_file.isEmpty())
+        return;
+    save_to_file(auto_save_file, dt);
+}
+
 void ClipBoardContent::on_save_to_file(QString file_name){
     if(file_name.isEmpty())
         return;
     for(auto p:data)
-        save_to_file(p);
+        save_to_file(file_name, p);
     emit tray_msg(GS("SAVE_TO_FILE"),GS("SUCCESS"));
 }
 
@@ -186,18 +192,13 @@ void ClipBoardContent::on_load_from_file(QString file_name){
         return;
     data.clear();
     QSqlDatabase database=QSqlDatabase::addDatabase("QSQLITE",QLatin1String("SFClipboard_DB"));
-    database.setDatabaseName(auto_save_file);
+    database.setDatabaseName(file_name);
     if(!database.open())
         return;
     QStringList tables=database.tables();
     if(tables.indexOf("SFClipboard_Table")==-1){
-        QSqlQuery query(database);
-        if(query.prepare("create table SFClipboard_Table(type int,text blob,html blob,image blob,color blob,urls blob)")){
-            if(!query.exec()){
-                database.close();
-                return;
-            }
-        }
+        database.close();
+        return;
     }
     Data temp_data;
     QSqlQuery select_sql(database);
@@ -217,7 +218,7 @@ void ClipBoardContent::on_load_from_file(QString file_name){
         temp_data.image=qbytearray2qvariant(select_sql.value("image").toByteArray());
         temp_data.color=qbytearray2qvariant(select_sql.value("color").toByteArray());
         temp_data.urls=decode_urls(select_sql.value("urls").toByteArray());
-        data.push_front(temp_data);
+        data.push_back(temp_data);
     }
     emit data_changed(data);
     database.close();

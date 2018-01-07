@@ -2,10 +2,11 @@
 #define MYSINGLEAPPLICATION_H
 #include <QApplication>
 #include <QSharedMemory>
-class SingleApplication : public QApplication{
+class SingleApplication : public QObject{
     Q_OBJECT
 public:
-    SingleApplication(int &argc, char *argv[], const QString uniqueKey);
+    SingleApplication( const QString uniqueKey);
+    ~SingleApplication();
     bool isRunning();
     void detach();
 private:

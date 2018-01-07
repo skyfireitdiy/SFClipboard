@@ -56,6 +56,7 @@ private:
     QList<QUrl> decode_urls(QByteArray data);
     QByteArray qvariant2qbytearray(QVariant t);
     QVariant qbytearray2qvariant(QByteArray b);
+    void save_to_file(QString fileName, Data dt);
 };
 
 #endif // CLIPBOARDCONTENT_H

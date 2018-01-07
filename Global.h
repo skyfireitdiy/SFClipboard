@@ -18,7 +18,7 @@ extern int  IMAGE ;
 extern int  COLOR ;
 extern int  URLS ;
 
-extern SingleApplication *pApp;
+extern QApplication *pApp;
 extern QSettings *pSettings;
 extern QString version;
 

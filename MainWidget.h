@@ -18,7 +18,8 @@
 #include <windows.h>
 #endif
 
-extern SingleApplication *pApp;
+extern QApplication *pApp;
+extern SingleApplication *pSingleApp;
 extern QString programName;
 
 class MainWidget : public QWidget

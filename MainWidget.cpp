@@ -94,7 +94,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     top_layout->addWidget(about_btn,3,0,1,1);
     top_layout->addWidget(hide_btn,3,3,1,1);
 
-
     main_layout->addWidget(pView);
     main_layout->addLayout(top_layout);
     setLayout(main_layout);
@@ -146,38 +145,20 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
 
     tray_menu->addAction(GS("EXIT"),this,SLOT(on_real_exit()));
 
+    tray_menu->setWindowFlags(tray_menu->windowFlags()|Qt::WindowStaysOnTopHint);
 
     tray_icon=new QSystemTrayIcon(QIcon(":/icon/resource/tray.png"),this);
     tray_icon->show();
     tray_icon->setContextMenu(tray_menu);
+
 
     read_setting();
 
     setContextMenuPolicy(Qt::CustomContextMenu);
 
     setWindowIcon(QIcon(":/icon/resource/tray.png"));
-    setStyleSheet(
-            #ifdef _WIN32
-                  "*{font-weight:bold;color:white;font-family:'微软雅黑';}"
-            #else
-            #ifdef __unix
-                "*{font-weight:bold;color:white;font-family:'微软雅黑';background-color:#220000;}"
-            #endif
-            #endif
-                  ".QLineEdit{background-color:#FFFFFF;color:000000;}"
-                  ".QListView{color:white;background-color:#220000;}"
-                  ".QPushButton{border-image:url(:/pic/resource/btn.png);border-width:5px;}"
-                  ".QPushButton:hover{border-image:url(:/pic/resource/btn_hover.png);border-width:5px;}"
-                  ".QPushButton:disabled{border-image:url(:/pic/resource/btn_pressed.png);border-width:5px;}"
-                  ".QMenu{background-color:#110000;}"
-                  ".QMessageBox{border-image:url(:/pic/resource/background.png);}"
-                  ".QPlainTextEdit{background-color:#220000;}"
-                  ".QTextBrowser{background-color:#220000;"
-                  ".QToolTip{background-color:#220000;color:#000000;}"
-                  );
 
     setWindowOpacity(0.9);
-
     pClipContent=new ClipBoardContent(this);
     connect(pClipContent,SIGNAL(data_changed(QQueue<Data>)),this,SLOT(on_data_changed(QQueue<Data>)));
     connect(this,SIGNAL(item_need_edit(int)),pClipContent,SLOT(on_data_edit(int)));
@@ -204,7 +185,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     connect(enable_auto_save,SIGNAL(stateChanged(int)),this,SLOT(on_setting_changed()));
     connect(auto_save_file_name_btn,SIGNAL(clicked(bool)),this,SLOT(on_set_auto_save_file()));
     connect(record_count_set_btn,SIGNAL(clicked(bool)),this,SLOT(on_setting_changed()));
-    //connect(this,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(on_customContextMenuRequested()));
+    connect(this,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(on_customContextMenuRequested()));
     connect(clear_all,SIGNAL(clicked(bool)),this,SLOT(on_clear_all()));
     connect(about_btn,SIGNAL(clicked(bool)),this,SLOT(on_about()));
     connect(hide_btn,SIGNAL(clicked(bool)),this,SLOT(on_auto_hide()));
@@ -219,9 +200,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     }
     setHook();
     on_tray_msg(GS("START"),GS("START_MSG"));
-
     pSettings->setValue("version",version);
-
 }
 
 
@@ -321,22 +300,22 @@ void MainWidget::read_setting(){
 void MainWidget::on_filter_act_clicked(){
     TypeFilter type(this);
     NEED_NO_TOP(
-    if(type.exec()){
-        int data_type=0;
-        if(type.enable_color->isChecked())
-            data_type|=COLOR;
-        if(type.enable_html->isChecked())
-            data_type|=HTML;
-        if(type.enable_image->isChecked())
-            data_type|=IMAGE;
-        if(type.enable_text->isChecked())
-            data_type|=TEXT;
-        if(type.enable_url->isChecked())
-            data_type|=URLS;
-        pSettings->setValue("data_type",data_type);
-        emit setting_changed();
-    }
-    );
+                if(type.exec()){
+                    int data_type=0;
+                    if(type.enable_color->isChecked())
+                    data_type|=COLOR;
+                    if(type.enable_html->isChecked())
+                    data_type|=HTML;
+                    if(type.enable_image->isChecked())
+                    data_type|=IMAGE;
+                    if(type.enable_text->isChecked())
+                    data_type|=TEXT;
+                    if(type.enable_url->isChecked())
+                    data_type|=URLS;
+                    pSettings->setValue("data_type",data_type);
+                    emit setting_changed();
+                }
+                );
 }
 
 void MainWidget::on_edit_data(Data data, int index){
@@ -346,7 +325,7 @@ void MainWidget::on_edit_data(Data data, int index){
 }
 
 void MainWidget::on_edit_btn_clicked(){
-     emit item_need_edit(pView->currentIndex().row());
+    emit item_need_edit(pView->currentIndex().row());
 }
 
 void MainWidget::on_delete_record(){
@@ -355,7 +334,7 @@ void MainWidget::on_delete_record(){
 
 
 void MainWidget::on_set_auto_save_file(){
-   NEED_NO_TOP(QString file_name=QFileDialog::getSaveFileName(this,GS("AUTO_SAVE"),"",GS("SFCLIPBOARD_FILE")+"(*.sfclp)"));
+    NEED_NO_TOP(QString file_name=QFileDialog::getSaveFileName(this,GS("AUTO_SAVE"),"",GS("SFCLIPBOARD_FILE")+"(*.sfclp)"));
     if(file_name.isEmpty())
         return;
     if(file_name.right(6).toLower()!=".sfclp")
@@ -452,6 +431,7 @@ void MainWidget::closeEvent(QCloseEvent *event){
     }else{
         event->accept();
         tray_icon->hide();
+        pSingleApp->detach();
         pApp->exit(0);
     }
 }
@@ -466,14 +446,11 @@ void MainWidget::on_real_exit(){
 }
 
 void MainWidget::on_customContextMenuRequested(){
+    tray_menu->setWindowFlags(tray_menu->windowFlags()|Qt::WindowStaysOnTopHint);
     tray_menu->popup(QCursor::pos());
 }
 
 void MainWidget::resizeEvent(QResizeEvent *){
-    QPalette pal;
-    pal.setBrush(QPalette::Window,QBrush(QPixmap(":/pic/resource/background.png").scaled(size())));
-    setPalette(pal);
-
     QRect widget_rect=geometry();
     QRect desktop_rect=pApp->desktop()->geometry();
     if(!auto_hide_widget&&widget_rect.bottom()>desktop_rect.bottom()){
@@ -517,15 +494,14 @@ void MainWidget::flush_settings(){
         connect(this,SIGNAL(rect_changed()),auto_hide_widget,SLOT(on_check_if_hide()));
         connect(this,SIGNAL(frame_in_out_sgn()),auto_hide_widget,SLOT(on_in_out()));
         connect(auto_hide_widget,SIGNAL(pos_changed(QPoint)),this,SLOT(on_pos_chnaged(QPoint)));
-        set_button_backimg(hide_btn,":/pic/resource/fixed.png");
+        set_button_backimg(hide_btn,":/pic/resource/float.png");
         float_fix_act->setText(GS("FIXED"));
     }else{
         if(auto_hide_widget){
             delete auto_hide_widget;
             auto_hide_widget=nullptr;
         }
-        hide_btn->setStyleSheet("");
-        set_button_backimg(hide_btn,":/pic/resource/float.png");
+        set_button_backimg(hide_btn,":/pic/resource/fixed.png");
         float_fix_act->setText(GS("FLOAT"));
     }
 }
@@ -572,8 +548,8 @@ void MainWidget::on_hot_delete(int num){
 
 void MainWidget::on_need_root(){
     NEED_NO_TOP(
-    QMessageBox::warning(this,GS("WARNING"),GS("ROOT_REQUEST"),QMessageBox::Ok);
-    );
+                QMessageBox::warning(this,GS("WARNING"),GS("ROOT_REQUEST"),QMessageBox::Ok);
+            );
 }
 
 void MainWidget::on_lang_set(QAction *act){
@@ -585,15 +561,8 @@ void MainWidget::on_lang_set(QAction *act){
     if(ret){
         SET_LANG(act->text());
         pSettings->setValue("lang",act->text());
-        pApp->detach();
+        pSingleApp->detach();
         pSettings->sync();
-
-#ifdef _WIN32
-        Sleep(_1000_MS);
-#else
-        msleep(_1000_MS);
-#endif
-
         QProcess pro;
         pro.startDetached("\""+pApp->arguments().at(0)+"\"");
         tray_icon->hide();
@@ -635,7 +604,9 @@ void MainWidget::on_in_out(){
 
 
 void MainWidget::on_tray_msg(QString title,QString msg){
+#ifdef __WIN32
     tray_icon->showMessage(title,msg);
+#endif
 }
 
 

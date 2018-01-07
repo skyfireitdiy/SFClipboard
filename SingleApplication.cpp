@@ -1,7 +1,7 @@
 ﻿//SingleApplication.cpp
 #include "SingleApplication.h"
-SingleApplication::SingleApplication(int &argc, char *argv[], const QString uniqueKey) :
-    QApplication(argc, argv), _uniqueKey(uniqueKey)
+SingleApplication::SingleApplication(const QString uniqueKey) :
+    _uniqueKey(uniqueKey)
 
 {
     sharedMemory.setKey(_uniqueKey);
@@ -15,6 +15,11 @@ SingleApplication::SingleApplication(int &argc, char *argv[], const QString uniq
             return;
         }
     }
+}
+
+SingleApplication::~SingleApplication()
+{
+    sharedMemory.detach();
 }
 
 bool SingleApplication::isRunning()
