@@ -96,52 +96,52 @@ void LinuxKeyHook::start(){
                         ctrl=true;
                     }else if(t.code==KEY_LEFTALT){
                         alt=true;
-                    }else if(t.code==KEY_KP0){
+                    }else if(t.code==KEY_KP0 || t.code == KEY_0){
                         if(ctrl)
                             emit hot_copy(0);
                         else if(alt)
                             emit hot_delete(0);
-                    }else if(t.code==KEY_KP1){
+                    }else if(t.code==KEY_KP1 || t.code == KEY_1){
                         if(ctrl)
                             emit hot_copy(1);
                         else if(alt)
                             emit hot_delete(1);
-                    }else if(t.code==KEY_KP2){
+                    }else if(t.code==KEY_KP2 || t.code == KEY_2){
                         if(ctrl)
                             emit hot_copy(2);
                         else if(alt)
                             emit hot_delete(2);
-                    }else if(t.code==KEY_KP3){
+                    }else if(t.code==KEY_KP3 || t.code == KEY_3){
                         if(ctrl)
                             emit hot_copy(3);
                         else if(alt)
                             emit hot_delete(3);
-                    }else if(t.code==KEY_KP4){
+                    }else if(t.code==KEY_KP4 || t.code == KEY_4){
                         if(ctrl)
                             emit hot_copy(4);
                         else if(alt)
                             emit hot_delete(4);
-                    }else if(t.code==KEY_KP5){
+                    }else if(t.code==KEY_KP5 || t.code == KEY_5){
                         if(ctrl)
                             emit hot_copy(5);
                         else if(alt)
                             emit hot_delete(5);
-                    }else if(t.code==KEY_KP6){
+                    }else if(t.code==KEY_KP6 || t.code == KEY_6){
                         if(ctrl)
                             emit hot_copy(6);
                         else if(alt)
                             emit hot_delete(6);
-                    }else if(t.code==KEY_KP7){
+                    }else if(t.code==KEY_KP7 || t.code == KEY_7){
                         if(ctrl)
                             emit hot_copy(7);
                         else if(alt)
                             emit hot_delete(7);
-                    }else if(t.code==KEY_KP8){
+                    }else if(t.code==KEY_KP8 || t.code == KEY_8){
                         if(ctrl)
                             emit hot_copy(8);
                         else if(alt)
                             emit hot_delete(8);
-                    }else if(t.code==KEY_KP9){
+                    }else if(t.code==KEY_KP9 || t.code == KEY_9){
                         if(ctrl)
                             emit hot_copy(9);
                         else if(alt)

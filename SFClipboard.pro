@@ -35,8 +35,8 @@ SOURCES += \
     GetPs.cpp
 
 win32{
-HEADERS +=SFReg.h
-SOURCES += SFReg.cpp
+    HEADERS +=SFReg.h
+    SOURCES += SFReg.cpp
 }
 
 CONFIG+= c++11
