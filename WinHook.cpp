@@ -28,33 +28,43 @@ LRESULT CALLBACK keyProc(int,WPARAM wParam,LPARAM lParam)
     int num=0;
     switch (pkbhs->vkCode) {
     case VK_NUMPAD0:
+    case 0x30:
         num=0;
         break;
     case VK_NUMPAD1:
+    case 0x31:
         num=1;
         break;
     case VK_NUMPAD2:
+    case 0x32:
         num=2;
         break;
     case VK_NUMPAD3:
+    case 0x33:
         num=3;
         break;
     case VK_NUMPAD4:
+    case 0x34:
         num=4;
         break;
     case VK_NUMPAD5:
+    case 0x35:
         num=5;
         break;
     case VK_NUMPAD6:
+    case 0x36:
         num=6;
         break;
     case VK_NUMPAD7:
+    case 0x37:
         num=7;
         break;
     case VK_NUMPAD8:
+    case 0x38:
         num=8;
         break;
     case VK_NUMPAD9:
+    case 0x39:
         num=9;
         break;
     default:
