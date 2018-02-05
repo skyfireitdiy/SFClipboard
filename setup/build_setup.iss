@@ -60,7 +60,7 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked;
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
@@ -82,6 +82,13 @@ Source: "{#BaseDir}\bin\Qt5Sql.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDir}\bin\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDir}\bin\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BaseDir}\bin\SFClipboard.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#BaseDir}\bin\iconengines\*"; DestDir: "{app}\iconengines"; Flags: ignoreversion
+Source: "{#BaseDir}\bin\imageformats\*"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "{#BaseDir}\bin\platforms\*"; DestDir: "{app}\platforms"; Flags: ignoreversion
+Source: "{#BaseDir}\bin\sqldrivers\*"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion
+Source: "{#BaseDir}\bin\translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion
+
+
 ; 注意: 不要在任何共享系统文件上使用“Flags: ignoreversion”
 
 [Icons]
