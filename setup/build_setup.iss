@@ -2,7 +2,7 @@
 ; 有关创建 Inno Setup 脚本文件的详细资料请查阅帮助文档！
 
 #define MyAppName "SFClipboard"
-#define MyAppVersion "3.3.0.12"
+#define MyAppVersion "3.3.0.13"
 #define MyAppPublisher "天火软件"
 #define MyAppExeName "SFClipboard.exe"
 #define BaseDir ".."

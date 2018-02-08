@@ -127,8 +127,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     lan_menu->addActions(act_list);
     connect(lan_menu,SIGNAL(triggered(QAction*)),this,SLOT(on_lang_set(QAction*)));
 
-
-    tray_menu->addAction(GS("HIDE_SHOW_MAIN_WINDOW"),this,SLOT(on_show_hide_widget()));
     filter_act=tray_menu->addAction(GS("TYPE_FILTER"),this,SLOT(on_filter_act_clicked()));
     save_to_file=tray_menu->addAction(GS("SAVE_TO_FILE"),this,SLOT(on_save_to_file()));
     load_from_file =tray_menu->addAction(GS("LOAD_FROM_FILE"),this,SLOT(on_load_from_file()));
@@ -191,7 +189,6 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent),auto_hide_widget(0),re
     connect(about_btn,SIGNAL(clicked(bool)),this,SLOT(on_about()));
     connect(hide_btn,SIGNAL(clicked(bool)),this,SLOT(on_auto_hide()));
     connect(pView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(on_edit_btn_clicked()));
-    connect(tray_icon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(on_tray_active(QSystemTrayIcon::ActivationReason)));
     connect(this,SIGNAL(frame_in_out_sgn()),this,SLOT(on_in_out()));
 
 
@@ -416,13 +413,6 @@ void MainWidget::on_export_html_single(){
     emit export_html_one_sgn(file_name);
 }
 
-void MainWidget::on_show_hide_widget(){
-    if(isHidden()){
-        show();
-    }else{
-        hide();
-    }
-}
 
 void MainWidget::closeEvent(QCloseEvent *event){
     hide();
@@ -507,11 +497,6 @@ void MainWidget::flush_settings(){
     }
 }
 
-void MainWidget::on_tray_active(QSystemTrayIcon::ActivationReason reason){
-    if(reason==QSystemTrayIcon::DoubleClick){
-        on_show_hide_widget();
-    }
-}
 
 MainWidget::~MainWidget(){
     write_setting();

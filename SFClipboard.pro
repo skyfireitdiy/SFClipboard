@@ -64,3 +64,5 @@ MOC_DIR= $$PWD/moc
 UI_DIR= $$PWD/ui
 DESTDIR = $$PWD/bin
 
+VERSION = 3.3.0.13
+

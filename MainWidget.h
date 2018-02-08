@@ -66,13 +66,11 @@ public slots:
     void on_export_text_single();
     void on_export_html();
     void on_export_html_single();
-    void on_show_hide_widget();
     void on_real_exit();
     void on_customContextMenuRequested();
     void on_about();
     void on_clear_all();
     void on_auto_hide();
-    void on_tray_active(QSystemTrayIcon::ActivationReason reason);
     void on_lang_set(QAction *act);
 
     void on_auto_run();
