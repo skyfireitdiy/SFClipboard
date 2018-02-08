@@ -453,10 +453,11 @@ void MainWidget::resizeEvent(QResizeEvent *){
 void MainWidget::on_about(){
     QMessageBox about_wnd(this);
 #ifdef FOR_FF
-    about_wnd.setIconPixmap(QPixmap(":/pic/resource/about_icon.png"));
+    QPixmap pixmap = QPixmap(":/pic/resource/about_icon.png").scaled(200,200);
 #else
-    about_wnd.setIconPixmap(QPixmap(":/pic/resource/sponse.png"));
+    QPixmap pixmap = QPixmap(":/pic/resource/sponse.png").scaled(200,200);
 #endif
+    about_wnd.setIconPixmap(pixmap);
     about_wnd.setWindowIconText(GS("ABOUT_MESSAGE"));
     about_wnd.setText(GS("AUTHOR")+"：SkyFire\n"+GS("QQ")+"：1513008876\n"+GS("EMAIL")+"：skyfireitdiy@hotmail.com\n"+GS("PROJECT_ADDRESS")+"：http://git.oschina.net/skyfireitdiy/SFClipboard\n"+GS("VERSION")+"："+version+"\n"+GS("BUILD_TIME")+"："+__DATE__+" "+__TIME__+"\n\n\n"+GS("HELP_INFO"));
     NEED_NO_TOP(about_wnd.exec());
