@@ -30,11 +30,14 @@ QString programName="SFClipboard"+version;
 int main(int argc,char ** argv){
     QApplication app(argc,argv);
     pApp=&app;
+
+    qDebug()<<"Start";
     
     app.setStyleSheet(
-                "*{color:white;font-family:'微软雅黑';background-color:#0F0F19;color:#FFFFFF;}"
+                "*{font-family:'微软雅黑';background-color:#0F0F19;color:#FFFFFF;}"
                 "QPlainTextEdit,QLineEdit,QTextBrowser{background-color:#FFFFFF;color:000000;}"
                 );
+
                 
     SingleApplication singleApp(programName);
     pSingleApp = &singleApp;
@@ -59,6 +62,8 @@ int main(int argc,char ** argv){
     lang_type=lang_type.isEmpty()?"Chinese":lang_type;
     __lan_st=new SFLanguage("lang.ini",lang_type);
     SET_LANG(lang_type);
+
+    qDebug()<<"Set language finished!";
 #ifdef __WIN32
     if(argc==1){
         OSVERSIONINFO   osver;
@@ -100,15 +105,15 @@ int main(int argc,char ** argv){
 
 #else
     if(!if_is_linux_root()){
-        GetPs pswnd(0);
+        qDebug()<<"Linux not root";
+        GetPs pswnd(nullptr);
         pswnd.exec();
         singleApp.detach();
         SFPassword ps(pswnd.get_ps());
         QFile file(":/shell/resource/run_as_root.sh");
         file.copy("run_as_root.sh");
-        run_process("chmod +x run_as_root.sh");
-        qDebug()<<"./run_as_root.sh "+QString::fromLocal8Bit(ps)+" "+qApp->arguments()[0];
-        QProcess::startDetached("./run_as_root.sh "+QString::fromLocal8Bit(ps)+" "+qApp->arguments()[0]);
+        qDebug()<<"bash ./run_as_root.sh "+QString::fromLocal8Bit(ps)+" "+qApp->arguments()[0];
+        QProcess::startDetached("bash ./run_as_root.sh "+QString::fromLocal8Bit(ps)+" "+qApp->arguments()[0]);
         exit(0);
     }
 

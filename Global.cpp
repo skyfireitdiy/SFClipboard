@@ -1,6 +1,7 @@
 #include <Global.h>
 #include <QProcess>
 #include <QFile>
+#include <QDebug>
 
 #ifdef __WIN32
 
@@ -44,10 +45,12 @@ QString run_process(QString cmd){
 
 
 bool if_is_linux_root(){
+    qDebug()<<"copy script";
     QFile file(":/shell/resource/is_root.sh");
     file.copy("is_root.sh");
-    run_process("chmod +x is_root.sh");
-    int ret=run_process("./is_root.sh").toInt();
+    qDebug()<<"run is_root.sh";
+    int ret=run_process("bash ./is_root.sh").toInt();
+    qDebug()<<"root result"<< ret;
     return ret;
 }
 
